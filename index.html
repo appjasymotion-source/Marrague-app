@@ -2,111 +2,298 @@
 <html lang="pt-mz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Marragué Niassa</title>
+    <!-- Fontes e Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --gold: #e5b94c; --dark: #0c0c0c; --glass: rgba(255,255,255,0.1); --admin-red: #ff4757; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        body, html { height: 100%; width: 100%; background: #000; color: white; overflow: hidden; }
-        .main-bg { position: fixed; width: 100%; height: 100%; background: url('https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg') center/cover; z-index: -1; }
-        .overlay { position: fixed; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 0; }
-        .screen { position: absolute; width: 100%; height: 100%; display: none; flex-direction: column; padding: 20px; z-index: 10; overflow-y: auto; }
-        .active { display: flex; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .glass-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); padding: 25px; width: 100%; }
-        input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 15px; border-radius: 12px; color: white; margin-bottom: 12px; outline: none; }
-        button { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .btn-gold { background: var(--gold); color: #000; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .points-badge { background: var(--gold); color: #000; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; }
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .menu-item { background: var(--glass); padding: 20px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .menu-item i { font-size: 24px; color: var(--gold); margin-bottom: 10px; }
+        :root { 
+            --gold: #e5b94c; 
+            --gold-dark: #b8933a;
+            --dark: #0a0a0a; 
+            --glass: rgba(255,255,255,0.1);
+            --admin-red: #ff4757;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body, html { height: 100%; width: 100%; background: var(--dark); color: white; overflow: hidden; }
+
+        /* Fundo com Overlay Profissional */
+        .main-bg { 
+            position: fixed; width: 100%; height: 100%; 
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), 
+                        url('https://images.unsplash.com/photo-1445116572660-236099ec97a0?q=80&w=2071&auto=format&fit=crop'); 
+            background-size: cover; background-position: center; z-index: -1; 
+        }
+
+        /* Container de Telas */
+        .screen { 
+            position: absolute; width: 100%; height: 100%; 
+            display: none; flex-direction: column; padding: 25px; 
+            z-index: 10; overflow-y: auto; -webkit-overflow-scrolling: touch;
+        }
+        .active { display: flex; animation: appEnter 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        
+        @keyframes appEnter { 
+            from { opacity: 0; transform: scale(1.1); } 
+            to { opacity: 1; transform: scale(1); } 
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card { 
+            background: var(--glass); 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); 
+            padding: 25px; width: 100%; margin-bottom: 20px;
+        }
+
+        /* Inputs Estilizados */
+        input, select, textarea { 
+            width: 100%; background: rgba(255,255,255,0.07); 
+            border: 1px solid rgba(255,255,255,0.2); padding: 16px; 
+            border-radius: 15px; color: white; margin-bottom: 12px; 
+            outline: none; font-size: 15px; transition: 0.3s;
+        }
+        input:focus { border-color: var(--gold); background: rgba(255,255,255,0.12); }
+
+        /* Botões com Feedback */
+        button { 
+            width: 100%; padding: 18px; border-radius: 15px; border: none; 
+            font-weight: 800; cursor: pointer; transition: 0.2s; 
+            text-transform: uppercase; letter-spacing: 1px; font-size: 14px;
+        }
+        .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        .btn-gold:active { transform: scale(0.97); filter: brightness(1.1); }
+
+        /* Grid de Navegação */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .menu-item { 
+            background: var(--glass); padding: 25px 15px; border-radius: 25px; 
+            text-align: center; border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
+        }
+        .menu-item:active { background: rgba(255,255,255,0.2); transform: translateY(-3px); }
+        .menu-item i { font-size: 32px; color: var(--gold); margin-bottom: 12px; display: block; }
+
+        /* Cards de Resultados do Firebase */
+        .result-card { 
+            background: #fff; color: #1a1a1a; border-radius: 20px; 
+            padding: 20px; margin-bottom: 15px; position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.4s ease;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .badge { position: absolute; top: 15px; right: 15px; background: var(--gold); padding: 4px 10px; font-size: 10px; font-weight: bold; border-radius: 8px; }
+
+        .loader { width: 35px; height: 35px; border: 4px solid rgba(229,185,76,0.2); border-top: 4px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
     <div class="main-bg"></div>
-    <div class="overlay"></div>
 
+    <!-- TELA 1: SPLASH (IDENTIDADE VISUAL) -->
     <div id="splash" class="screen active" style="justify-content:center; align-items:center;">
-        <h1 style="font-size: 50px; color: var(--gold); font-weight: 900;">Marragué</h1>
-        <div style="width: 40px; height: 40px; border: 4px solid var(--gold); border-top: 4px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <div style="text-align: center;">
+            <h1 style="font-size: 55px; color: var(--gold); font-weight: 800; letter-spacing: -3px; line-height: 1;">MARRAGUÉ</h1>
+            <p style="letter-spacing: 8px; font-size: 11px; font-weight: 300; opacity: 0.8;">NIASSA EXPLORER</p>
+            <div class="loader" style="margin: 40px auto 0 auto;"></div>
+        </div>
     </div>
 
+    <!-- TELA 2: LOGIN/CADASTRO -->
     <div id="login" class="screen" style="justify-content:center; align-items:center;">
-        <h2 style="margin-bottom: 20px; color: var(--gold);">Entrar</h2>
-        <div class="glass-card" style="max-width: 350px;">
-            <input type="email" id="userEmail" placeholder="Email">
-            <input type="password" id="userPass" placeholder="Senha">
-            <button class="btn-gold" onclick="entrar()">Aceder</button>
-            <p style="margin-top: 15px; font-size: 13px; text-align:center;" onclick="alert('Funcionalidade de registo em breve!')">Criar nova conta</p>
+        <div class="glass-card" style="max-width: 400px;">
+            <h2 style="margin-bottom: 10px; color: var(--gold);">Bem-vindo</h2>
+            <p style="font-size: 13px; opacity: 0.7; margin-bottom: 25px;">Explore o melhor de Cuamba e Niassa.</p>
+            
+            <input type="email" id="emailField" placeholder="Email">
+            <input type="password" id="passField" placeholder="Palavra-passe">
+            
+            <button class="btn-gold" onclick="autenticar()">Entrar</button>
+            
+            <p style="text-align: center; margin-top: 25px; font-size: 13px; opacity: 0.8;" onclick="alert('Sistema de Registro em breve via Firebase Auth')">
+                Novo por aqui? <span style="color: var(--gold); font-weight: bold;">Criar Conta</span>
+            </p>
         </div>
     </div>
 
+    <!-- TELA 3: DASHBOARD USUÁRIO -->
     <div id="userDash" class="screen">
-        <div class="header">
-            <h3>Olá, <span id="clientName">Usuário</span></h3>
-            <div class="points-badge"><i class="fas fa-star"></i> 120 pts</div>
+        <div style="display:flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
+            <div>
+                <p style="font-size: 14px; opacity: 0.6;">Olá,</p>
+                <h2 id="welcomeName" style="color: var(--gold); text-transform: capitalize;">Explorador</h2>
+            </div>
+            <button onclick="fazerLogout()" style="width:auto; background:rgba(255,255,255,0.05); color:white; border:1px solid rgba(255,255,255,0.2); padding: 8px 15px; font-size: 11px;">SAIR</button>
         </div>
-        <div class="glass-card">
-            <input type="text" placeholder="🔍 Restaurantes, Hoteis...">
+
+        <div id="menuPrincipal" class="menu-grid">
+            <div class="menu-item" onclick="verCategoria('Restaurante')">
+                <i class="fas fa-utensils"></i><p>Restaurantes</p>
+            </div>
+            <div class="menu-item" onclick="verCategoria('Hotel')">
+                <i class="fas fa-bed"></i><p>Hotéis</p>
+            </div>
+            <div class="menu-item" onclick="verCategoria('Loja')">
+                <i class="fas fa-shopping-bag"></i><p>Serviços</p>
+            </div>
+            <div class="menu-item" onclick="alert('Funcionalidade GPS Niassa em breve')">
+                <i class="fas fa-map-marked-alt"></i><p>Mapa</p>
+            </div>
         </div>
-        <div class="menu-grid">
-            <div class="menu-item"><i class="fas fa-utensils"></i><p>Restaurantes</p></div>
-            <div class="menu-item"><i class="fas fa-bed"></i><p>Hoteis</p></div>
-            <div class="menu-item"><i class="fas fa-map-marker-alt"></i><p>Maps</p></div>
-            <div class="menu-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><p>Sair</p></div>
+
+        <!-- LISTA DE LOCAIS (DINÂMICA) -->
+        <div id="listaConteudo" style="display: none; margin-top: 5px;">
+            <button onclick="fecharLista()" style="width:auto; background:none; color: var(--gold); margin-bottom: 20px; padding:0; font-size: 14px;"><i class="fas fa-chevron-left"></i> VOLTAR AO MENU</button>
+            <h3 id="catNome" style="margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;"></h3>
+            <div id="renderDados"></div>
         </div>
     </div>
 
+    <!-- TELA 4: PAINEL ADMIN -->
     <div id="adminDash" class="screen">
-        <h3 style="color: var(--admin-red); margin-bottom:20px;"><i class="fas fa-user-shield"></i> PAINEL ADMIN</h3>
-        <div class="menu-grid">
-            <div class="menu-item" style="border-color: var(--admin-red);"><i class="fas fa-plus-circle"></i><p>Novo Menu</p></div>
-            <div class="menu-item" style="border-color: var(--admin-red);"><i class="fas fa-users"></i><p>Usuários</p></div>
-            <div class="menu-item" onclick="location.reload()"><i class="fas fa-power-off"></i><p>Sair</p></div>
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2 style="color: var(--admin-red); font-size: 18px; letter-spacing: 1px;"><i class="fas fa-user-shield"></i> MODO GESTOR</h2>
+            <button onclick="fazerLogout()" style="width:auto; background: var(--admin-red); color: white; padding: 8px 15px; font-size: 11px;">DESLIGAR</button>
         </div>
+
+        <div class="glass-card">
+            <h3 style="margin-bottom: 20px; font-size: 16px;">Cadastrar Novo Ponto</h3>
+            <input type="text" id="admNome" placeholder="Nome do Local">
+            <select id="admCat">
+                <option value="Restaurante">Restaurante</option>
+                <option value="Hotel">Hotel</option>
+                <option value="Loja">Serviço/Loja</option>
+            </select>
+            <textarea id="admDesc" rows="4" placeholder="Descrição detalhada, contactos e localização..."></textarea>
+            <button class="btn-gold" id="btnPush" onclick="enviarParaFirebase()">Publicar no Marragué</button>
+        </div>
+        
+        <p style="text-align: center; font-size: 12px; opacity: 0.5;">Marragué Niassa v2.0 - Cuamba</p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        
-        // As tuas chaves reais
+        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
         const firebaseConfig = {
-          apiKey: "AIzaSyAZ_V-SfLdEXuPlU7W4uyWHvC_-Zm94jxU",
-          authDomain: "marragueapp.firebaseapp.com",
-          projectId: "marragueapp",
-          storageBucket: "marragueapp.firebasestorage.app",
-          messagingSenderId: "863284423517",
-          appId: "1:863284423517:web:c8883f5b0875d7b4a7d6b4",
-          measurementId: "G-TE2CP3SX66"
+            apiKey: "AIzaSyAZ_V-SfLdEXuPlU7W4uyWHvC_-Zm94jxU",
+            authDomain: "marragueapp.firebaseapp.com",
+            projectId: "marragueapp",
+            storageBucket: "marragueapp.firebasestorage.app",
+            messagingSenderId: "863284423517",
+            appId: "1:863284423517:web:c8883f5b0875d7b4a7d6b4"
         };
 
         const app = initializeApp(firebaseConfig);
-        console.log("Firebase conectado!");
+        const db = getFirestore(app);
 
-        // Funções de navegação
-        window.irPara = function(id) {
+        // NAVEGAÇÃO ENTRE TELAS
+        window.irPara = (id) => {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
+            const target = document.getElementById(id);
+            if(target) target.classList.add('active');
+        };
 
-        window.entrar = function() {
-            const email = document.getElementById('userEmail').value;
-            if (email === "admin@marrague.com") {
+        // LÓGICA DE LOGIN (RECONHECIMENTO)
+        window.autenticar = () => {
+            const email = document.getElementById('emailField').value.trim().toLowerCase();
+            const pass = document.getElementById('passField').value;
+
+            if(!email || !pass) return alert("Por favor, preencha todos os campos.");
+
+            // SEPARAÇÃO DE CARGOS
+            if(email === "admin@marrague.com") {
                 irPara('adminDash');
-            } else if (email.includes("@")) {
-                document.getElementById('clientName').innerText = email.split('@')[0];
-                irPara('userDash');
             } else {
-                alert("Insira um email válido!");
+                document.getElementById('welcomeName').innerText = email.split('@')[0];
+                irPara('userDash');
             }
-        }
+        };
 
-        setTimeout(() => { irPara('login'); }, 3000);
+        window.fazerLogout = () => {
+            document.getElementById('emailField').value = "";
+            document.getElementById('passField').value = "";
+            irPara('login');
+        };
+
+        // LÓGICA ADMIN: SALVAR NO FIREBASE
+        window.enviarParaFirebase = async () => {
+            const nome = document.getElementById('admNome').value;
+            const cat = document.getElementById('admCat').value;
+            const desc = document.getElementById('admDesc').value;
+            const btn = document.getElementById('btnPush');
+
+            if(!nome || !desc) return alert("Erro: O local precisa de um nome e uma descrição.");
+
+            btn.disabled = true;
+            btn.innerText = "Sincronizando...";
+
+            try {
+                await addDoc(collection(db, "locais"), {
+                    nome, categoria: cat, descricao: desc, timestamp: new Date()
+                });
+                alert("Sucesso! " + nome + " já está visível para os usuários.");
+                document.getElementById('admNome').value = "";
+                document.getElementById('admDesc').value = "";
+            } catch (e) {
+                alert("Erro ao salvar dados. Verifique a internet.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Publicar no Marragué";
+            }
+        };
+
+        // LÓGICA USUÁRIO: BUSCAR DO FIREBASE
+        window.verCategoria = async (cat) => {
+            document.getElementById('menuPrincipal').style.display = 'none';
+            document.getElementById('listaConteudo').style.display = 'block';
+            document.getElementById('catNome').innerText = cat + "s";
+            
+            const feed = document.getElementById('renderDados');
+            feed.innerHTML = '<div style="text-align:center; padding:50px;"><div class="loader" style="margin:auto;"></div></div>';
+
+            try {
+                const q = query(collection(db, "locais"), where("categoria", "==", cat));
+                const snap = await getDocs(q);
+                
+                feed.innerHTML = "";
+                
+                if(snap.empty) {
+                    feed.innerHTML = '<p style="text-align:center; opacity:0.5; padding:40px;">Ainda não temos ' + cat + 's cadastrados em Niassa.</p>';
+                    return;
+                }
+
+                snap.forEach(doc => {
+                    const info = doc.data();
+                    feed.innerHTML += `
+                        <div class="result-card">
+                            <span class="badge">${info.categoria}</span>
+                            <h4 style="margin-bottom:8px; font-weight:800;">${info.nome}</h4>
+                            <p style="font-size:13px; line-height:1.5; color:#444;">${info.descricao}</p>
+                            <div style="margin-top:15px; display:flex; gap:15px; border-top:1px solid #eee; padding-top:10px;">
+                                <button style="padding:10px; background:#f0f0f0; color:#333; font-size:10px; width:auto; border-radius:8px;"><i class="fas fa-phone"></i> LIGAR</button>
+                                <button style="padding:10px; background:#f0f0f0; color:#333; font-size:10px; width:auto; border-radius:8px;"><i class="fas fa-directions"></i> IR AGORA</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                feed.innerHTML = '<p style="color:red;">Erro ao conectar com o banco de dados.</p>';
+            }
+        };
+
+        window.fecharLista = () => {
+            document.getElementById('menuPrincipal').style.display = 'grid';
+            document.getElementById('listaConteudo').style.display = 'none';
+        };
+
+        // SPLASH TIME (3 SEGUNDOS)
+        setTimeout(() => irPara('login'), 3000);
     </script>
 </body>
 </html>
