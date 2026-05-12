@@ -5,257 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marrague Niassa</title>
     <style>
-        /* RESET E DEFINIÇÕES BÁSICAS */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body, html { height: 100%; width: 100%; overflow: hidden; background-color: #000; }
 
-        body, html {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            background-color: #000;
-        }
-
-        /* FUNDO DINÂMICO (IGUAL À IMAGEM) */
-        .background-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* Imagem de fundo similar à sua */
-            background-image: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2070&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            z-index: 1;
+        /* Usei um link direto para a imagem não dar erro */
+        .bg-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1000');
+            background-size: cover; background-position: center; z-index: 1;
             transition: filter 1.2s ease, transform 1.2s ease;
         }
+        .blurred { filter: blur(12px) brightness(0.6); transform: scale(1.1); }
 
-        /* Efeito de desfoque que ativa após 3s */
-        .background-overlay.blurred {
-            filter: blur(10px) brightness(0.6);
-            transform: scale(1.1);
-        }
+        .app-container { position: relative; z-index: 10; height: 100%; width: 100%; }
+        .screen { display: none; height: 100%; width: 100%; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 20px; text-align: center; }
+        .active { display: flex; }
 
-        /* CONTAINER DE TELAS */
-        .app-container {
-            position: relative;
-            z-index: 10;
-            height: 100%;
-            width: 100%;
-        }
+        .logo { font-size: 58px; font-weight: 800; color: #e5b94c; margin-bottom: 40px; text-shadow: 0 4px 15px rgba(0,0,0,0.5); }
 
-        .screen {
-            display: none;
-            height: 100%;
-            width: 100%;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .active-flex { display: flex; }
-
-        /* ESTILO LOGO MARRAGUE */
-        .logo-text {
-            font-size: 50px;
-            font-weight: 800;
-            color: #e5b94c; /* Amarelo/Dourado da sua logo */
-            letter-spacing: -1px;
-            margin-bottom: 40px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        /* FORMULÁRIO DE LOGIN (ESTILO TRANSPARENTE) */
-        .login-box {
-            width: 100%;
-            max-width: 320px;
-        }
-
-        .input-field {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 16px 20px;
-            border-radius: 30px;
-            color: white;
-            margin-bottom: 15px;
-            font-size: 16px;
-            backdrop-filter: blur(5px);
-            outline: none;
-        }
-
-        .input-field::placeholder {
-            color: rgba(255,255,255,0.7);
+        .input-box { width: 100%; max-width: 320px; }
+        input {
+            width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            padding: 20px; border-radius: 40px; color: white; margin-bottom: 15px; outline: none; backdrop-filter: blur(10px); font-size: 17px;
         }
 
         .btn-entrar {
-            width: 100%;
-            background: #111;
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            text-transform: uppercase;
+            width: 100%; background: #000; color: white; border: none; padding: 22px;
+            border-radius: 40px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 16px; margin-top: 15px;
         }
 
-        .login-footer {
-            margin-top: 25px;
-            font-size: 14px;
-        }
-
-        .login-footer p {
-            margin: 12px 0;
-            cursor: pointer;
-            color: rgba(255,255,255,0.9);
-        }
-
-        .version-text {
-            position: absolute;
-            bottom: 30px;
-            font-size: 11px;
-            color: rgba(255,255,255,0.5);
-            width: 100%;
-            left: 0;
-        }
-
-        /* INTERFACE DO APP (SISTEMA DE FEED) */
-        .main-app-screen {
-            background: #f8f9fa;
-            color: #333;
-            overflow-y: auto;
-            display: none;
-            height: 100%;
-        }
-
-        .app-header {
-            background: white;
-            padding: 20px;
-            font-weight: bold;
-            font-size: 18px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .feed-container {
-            padding: 20px;
-            padding-bottom: 80px;
-        }
-
-        .place-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        .place-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-
-        .place-info { padding: 15px; }
-
-        .nav-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 65px;
-            background: white;
-            display: flex;
-            border-top: 1px solid #eee;
-        }
-
-        .nav-btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #999;
-        }
-
-        .nav-btn.active { color: #e5b94c; font-weight: bold; }
+        .links { margin-top: 30px; font-size: 15px; line-height: 2.2; color: #ddd; }
+        .version { position: absolute; bottom: 30px; font-size: 11px; opacity: 0.6; width: 100%; }
     </style>
 </head>
 <body>
-
-    <div id="bg-img" class="background-overlay"></div>
-
+    <div id="bg" class="bg-overlay"></div>
     <div class="app-container">
-        
-        <div id="splash" class="screen active-flex">
-            <h1 class="logo-text">marrague</h1>
-        </div>
-
+        <div id="splash" class="screen active"><h1 class="logo">marrague</h1></div>
         <div id="login" class="screen">
-            <h1 class="logo-text" style="font-size: 38px;">marrague</h1>
-            <div class="login-box">
-                <input type="text" id="user-input" class="input-field" placeholder="E-mail ou Telefone">
-                <input type="password" id="pass-input" class="input-field" placeholder="Senha">
-                <button class="btn-entrar" onclick="entrarNoApp()">ENTRAR</button>
-                
-                <div class="login-footer">
+            <h1 class="logo" style="font-size: 48px;">marrague</h1>
+            <div class="input-box">
+                <input type="text" placeholder="Jasy">
+                <input type="password" placeholder="···">
+                <button class="btn-entrar">ENTRAR</button>
+                <div class="links">
                     <p>Esqueceu a senha?</p>
-                    <p>Criar conta VIP</p>
+                    <p>Criar conta</p>
                 </div>
             </div>
-            <div class="version-text">
-                Versão 1.2.0 - Marrague Niassa Delivery & Services
-            </div>
+            <div class="version">Versão 1.2.0 - Marrague Niassa Delivery & Services</div>
         </div>
-
-        <div id="home" class="main-app-screen">
-            <div class="app-header">Marragué Niassa</div>
-            <div id="feed" class="feed-container">
-                <div class="place-card">
-                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000">
-                    <div class="place-info">
-                        <strong>Restaurante Central</strong><br>
-                        <small>Aberto agora • Niassa</small>
-                    </div>
-                </div>
-            </div>
-            <div class="nav-bar">
-                <div class="nav-btn active">Home</div>
-                <div class="nav-btn" onclick="alert('Perfil em breve')">Perfil</div>
-            </div>
-        </div>
-
     </div>
-
     <script>
-        // Lógica de Splash: Espera 3 segundos e troca
         setTimeout(() => {
-            document.getElementById('splash').classList.remove('active-flex');
-            document.getElementById('login').classList.add('active-flex');
-            
-            // Ativa o desfoque (blur) no fundo igual à sua imagem
-            document.getElementById('bg-img').classList.add('blurred');
+            document.getElementById('splash').classList.remove('active');
+            document.getElementById('login').classList.add('active');
+            document.getElementById('bg').classList.add('blurred');
         }, 3000);
-
-        function entrarNoApp() {
-            // Esconde o fundo e o login, mostra a home
-            document.getElementById('login').classList.remove('active-flex');
-            document.getElementById('bg-img').style.display = 'none';
-            document.getElementById('home').style.display = 'block';
-        }
     </script>
 </body>
 </html>
