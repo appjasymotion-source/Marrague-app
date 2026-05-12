@@ -1,99 +1,112 @@
-# Criando um site de páginas GitHub
+<!DOCTYPE html>
+<html lang="pt-mz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marragué Niassa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --gold: #e5b94c; --dark: #0c0c0c; --glass: rgba(255,255,255,0.1); --admin-red: #ff4757; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body, html { height: 100%; width: 100%; background: #000; color: white; overflow: hidden; }
+        .main-bg { position: fixed; width: 100%; height: 100%; background: url('https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg') center/cover; z-index: -1; }
+        .overlay { position: fixed; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 0; }
+        .screen { position: absolute; width: 100%; height: 100%; display: none; flex-direction: column; padding: 20px; z-index: 10; overflow-y: auto; }
+        .active { display: flex; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .glass-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); padding: 25px; width: 100%; }
+        input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 15px; border-radius: 12px; color: white; margin-bottom: 12px; outline: none; }
+        button { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .btn-gold { background: var(--gold); color: #000; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .points-badge { background: var(--gold); color: #000; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .menu-item { background: var(--glass); padding: 20px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .menu-item i { font-size: 24px; color: var(--gold); margin-bottom: 10px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
 
-É possível criar um site do GitHub Pages num repositório novo ou existente.
+    <div class="main-bg"></div>
+    <div class="overlay"></div>
 
-## Criar um repositório para seu site
+    <div id="splash" class="screen active" style="justify-content:center; align-items:center;">
+        <h1 style="font-size: 50px; color: var(--gold); font-weight: 900;">Marragué</h1>
+        <div style="width: 40px; height: 40px; border: 4px solid var(--gold); border-top: 4px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    </div>
 
-Você pode criar um repositório ou escolher um repositório existente para seu site.
+    <div id="login" class="screen" style="justify-content:center; align-items:center;">
+        <h2 style="margin-bottom: 20px; color: var(--gold);">Entrar</h2>
+        <div class="glass-card" style="max-width: 350px;">
+            <input type="email" id="userEmail" placeholder="Email">
+            <input type="password" id="userPass" placeholder="Senha">
+            <button class="btn-gold" onclick="entrar()">Aceder</button>
+            <p style="margin-top: 15px; font-size: 13px; text-align:center;" onclick="alert('Funcionalidade de registo em breve!')">Criar nova conta</p>
+        </div>
+    </div>
 
-Se você quiser criar um site do GitHub Pages para um repositório em que nem todos os arquivos do repositório estejam relacionados ao site, você poderá configurar uma fonte de publicação para seu site. Por exemplo, você pode ter um branch e uma pasta dedicados a armazenar os arquivos de origem do site ou usar um fluxo de trabalho personalizado do GitHub Actions para criar e implantar os arquivos de origem do site.
+    <div id="userDash" class="screen">
+        <div class="header">
+            <h3>Olá, <span id="clientName">Usuário</span></h3>
+            <div class="points-badge"><i class="fas fa-star"></i> 120 pts</div>
+        </div>
+        <div class="glass-card">
+            <input type="text" placeholder="🔍 Restaurantes, Hoteis...">
+        </div>
+        <div class="menu-grid">
+            <div class="menu-item"><i class="fas fa-utensils"></i><p>Restaurantes</p></div>
+            <div class="menu-item"><i class="fas fa-bed"></i><p>Hoteis</p></div>
+            <div class="menu-item"><i class="fas fa-map-marker-alt"></i><p>Maps</p></div>
+            <div class="menu-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><p>Sair</p></div>
+        </div>
+    </div>
 
-Se a conta que é o proprietário do repositório usar o GitHub Free ou o GitHub Free para organizações, o repositório precisará ser público.
+    <div id="adminDash" class="screen">
+        <h3 style="color: var(--admin-red); margin-bottom:20px;"><i class="fas fa-user-shield"></i> PAINEL ADMIN</h3>
+        <div class="menu-grid">
+            <div class="menu-item" style="border-color: var(--admin-red);"><i class="fas fa-plus-circle"></i><p>Novo Menu</p></div>
+            <div class="menu-item" style="border-color: var(--admin-red);"><i class="fas fa-users"></i><p>Usuários</p></div>
+            <div class="menu-item" onclick="location.reload()"><i class="fas fa-power-off"></i><p>Sair</p></div>
+        </div>
+    </div>
 
-Caso deseje criar um site em um repositório existente, vá para a seção [Como criar seu site](#creating-your-site).
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        
+        // As tuas chaves reais
+        const firebaseConfig = {
+          apiKey: "AIzaSyAZ_V-SfLdEXuPlU7W4uyWHvC_-Zm94jxU",
+          authDomain: "marragueapp.firebaseapp.com",
+          projectId: "marragueapp",
+          storageBucket: "marragueapp.firebasestorage.app",
+          messagingSenderId: "863284423517",
+          appId: "1:863284423517:web:c8883f5b0875d7b4a7d6b4",
+          measurementId: "G-TE2CP3SX66"
+        };
 
-1. No canto superior direito de qualquer página, selecione <svg version="1.1" width="16" height="16" viewBox="0 0 16 16" class="octicon octicon-plus" aria-label="Create something new" role="img"><path d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z"></path></svg> e clique em **Novo repositório**.
+        const app = initializeApp(firebaseConfig);
+        console.log("Firebase conectado!");
 
-   ![Captura de tela de um menu suspenso GitHub mostrando as opções para criar novos itens. Há um item de menu "Novo repositório" com o contorno em laranja escuro.](/assets/images/help/repository/repo-create-global-nav-update.png)
+        // Funções de navegação
+        window.irPara = function(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
 
-2. Use o menu suspenso **Proprietário** para selecionar a conta que deseja atribuir como proprietário do repositório.
-   ![Captura de tela do menu Proprietário de um novo repositório do GitHub. O menu mostra duas opções, octocat e github.](/assets/images/help/repository/create-repository-owner.png)
+        window.entrar = function() {
+            const email = document.getElementById('userEmail').value;
+            if (email === "admin@marrague.com") {
+                irPara('adminDash');
+            } else if (email.includes("@")) {
+                document.getElementById('clientName').innerText = email.split('@')[0];
+                irPara('userDash');
+            } else {
+                alert("Insira um email válido!");
+            }
+        }
 
-3. Digite um nome para o repositório e uma descrição opcional. Se você estiver criando um site de usuário ou de organização, seu repositório precisará ser chamado `<user>.github.io` ou `<organization>.github.io`. Se o nome do usuário ou da organização contiver letras maiúsculas, você precisará colocá-las em minúsculas.
-   Para saber mais, confira [O que é GitHub Pages?](/pt/pages/getting-started-with-github-pages/what-is-github-pages#types-of-github-pages-sites).
-   ![Captura de tela das configurações do GitHub Pages em um repositório. Há um campo de nome do repositório com o texto "octocat.github.io" e o contorno em laranja escuro.](/assets/images/help/pages/create-repository-name-pages.png)
-
-4. Escolha uma visibilidade do repositório. Para saber mais, confira [Sobre repositórios](/pt/repositories/creating-and-managing-repositories/about-repositories#about-repository-visibility).
-
-5. Alternar **Adicionar LEIAME** para **Ativado**.
-
-6. Clique em **Criar repositório**.
-
-## Criar seu site
-
-Para criar seu site, você precisa ter um repositório para ele no GitHub. Se não estiver criando seu site em um repositório existente, confira [Como criar um repositório para seu site](#creating-a-repository-for-your-site).
-
-> \[!WARNING]
-> Sites criados com GitHub Pages estão disponíveis publicamente na Internet, mesmo que o repositório do site seja privado (se o seu plano ou organização permitir). Se você tiver dados confidenciais no repositório do seu site, poderá removê-los antes de publicá-los. Para saber mais, confira [Sobre repositórios](/pt/repositories/creating-and-managing-repositories/about-repositories#about-repository-visibility).
-
-1. No GitHub, acesse o repositório do seu site.
-
-2. Decida qual fonte de publicação você deseja usar. Confira [Configurando uma fonte de publicação para seu site GitHub Pages](/pt/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
-
-3. Crie o arquivo de entrada para seu site. GitHub Pages procurará um arquivo `index.html`, `index.md` ou `README.md` como o arquivo de entrada do seu site.
-
-   Se a sua fonte de publicação for um branch e uma pasta, o arquivo de entrada precisará estar no nível superior da pasta de origem no branch de origem. Por exemplo, se sua fonte de publicação for a pasta `/docs` no branch `main`, seu arquivo de entrada precisará estar localizado na pasta `/docs` em um branch chamado `main`.
-
-   Se a fonte de publicação for um fluxo de trabalho do GitHub Actions, o artefato que você implantar precisará incluir o arquivo de entrada na parte superior do artefato. Em vez de adicionar o arquivo de entrada ao repositório, há a opção de fazer com que o fluxo de trabalho do GitHub Actions gere esse arquivo de entrada ao ser executado.
-
-4. Configure a sua fonte de publicação. Confira [Configurando uma fonte de publicação para seu site GitHub Pages](/pt/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
-
-5. Seu site GitHub Pages está integrado e foi implantado com um fluxo de trabalho GitHub Actions. Para saber mais, confira [Visualizar o histórico de execução do fluxo de trabalho](/pt/actions/monitoring-and-troubleshooting-workflows/viewing-workflow-run-history).
-
-   > \[!NOTE]
-   > O GitHub Actions é gratuito para repositórios públicos. Os encargos de uso se aplicam a repositórios privados e internos que vão além do loteamento mensal de minutos gratuitos. Para saber mais, confira [Cobrança e uso](/pt/actions/learn-github-actions/usage-limits-billing-and-administration).
-
-## Como visualizar seu site publicado
-
-1. No nome do repositório, clique em **<svg version="1.1" width="16" height="16" viewBox="0 0 16 16" class="octicon octicon-gear" aria-label="gear" role="img"><path d="M8 0a8.2 8.2 0 0 1 .701.031C9.444.095 9.99.645 10.16 1.29l.288 1.107c.018.066.079.158.212.224.231.114.454.243.668.386.123.082.233.09.299.071l1.103-.303c.644-.176 1.392.021 1.82.63.27.385.506.792.704 1.218.315.675.111 1.422-.364 1.891l-.814.806c-.049.048-.098.147-.088.294.016.257.016.515 0 .772-.01.147.038.246.088.294l.814.806c.475.469.679 1.216.364 1.891a7.977 7.977 0 0 1-.704 1.217c-.428.61-1.176.807-1.82.63l-1.102-.302c-.067-.019-.177-.011-.3.071a5.909 5.909 0 0 1-.668.386c-.133.066-.194.158-.211.224l-.29 1.106c-.168.646-.715 1.196-1.458 1.26a8.006 8.006 0 0 1-1.402 0c-.743-.064-1.289-.614-1.458-1.26l-.289-1.106c-.018-.066-.079-.158-.212-.224a5.738 5.738 0 0 1-.668-.386c-.123-.082-.233-.09-.299-.071l-1.103.303c-.644.176-1.392-.021-1.82-.63a8.12 8.12 0 0 1-.704-1.218c-.315-.675-.111-1.422.363-1.891l.815-.806c.05-.048.098-.147.088-.294a6.214 6.214 0 0 1 0-.772c.01-.147-.038-.246-.088-.294l-.815-.806C.635 6.045.431 5.298.746 4.623a7.92 7.92 0 0 1 .704-1.217c.428-.61 1.176-.807 1.82-.63l1.102.302c.067.019.177.011.3-.071.214-.143.437-.272.668-.386.133-.066.194-.158.211-.224l.29-1.106C6.009.645 6.556.095 7.299.03 7.53.01 7.764 0 8 0Zm-.571 1.525c-.036.003-.108.036-.137.146l-.289 1.105c-.147.561-.549.967-.998 1.189-.173.086-.34.183-.5.29-.417.278-.97.423-1.529.27l-1.103-.303c-.109-.03-.175.016-.195.045-.22.312-.412.644-.573.99-.014.031-.021.11.059.19l.815.806c.411.406.562.957.53 1.456a4.709 4.709 0 0 0 0 .582c.032.499-.119 1.05-.53 1.456l-.815.806c-.081.08-.073.159-.059.19.162.346.353.677.573.989.02.03.085.076.195.046l1.102-.303c.56-.153 1.113-.008 1.53.27.161.107.328.204.501.29.447.222.85.629.997 1.189l.289 1.105c.029.109.101.143.137.146a6.6 6.6 0 0 0 1.142 0c.036-.003.108-.036.137-.146l.289-1.105c.147-.561.549-.967.998-1.189.173-.086.34-.183.5-.29.417-.278.97-.423 1.529-.27l1.103.303c.109.029.175-.016.195-.045.22-.313.411-.644.573-.99.014-.031.021-.11-.059-.19l-.815-.806c-.411-.406-.562-.957-.53-1.456a4.709 4.709 0 0 0 0-.582c-.032-.499.119-1.05.53-1.456l.815-.806c.081-.08.073-.159.059-.19a6.464 6.464 0 0 0-.573-.989c-.02-.03-.085-.076-.195-.046l-1.102.303c-.56.153-1.113.008-1.53-.27a4.44 4.44 0 0 0-.501-.29c-.447-.222-.85-.629-.997-1.189l-.289-1.105c-.029-.11-.101-.143-.137-.146a6.6 6.6 0 0 0-1.142 0ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM9.5 8a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 9.5 8Z"></path></svg> Settings**. Caso não consiga ver a guia "Configurações", selecione o menu suspenso **<svg version="1.1" width="16" height="16" viewBox="0 0 16 16" class="octicon octicon-kebab-horizontal" aria-label="More" role="img"><path d="M8 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM1.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm13 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path></svg>** , clique em **Configurações**.
-
-   ![Captura de tela de um cabeçalho de repositório que mostra as guias. A guia "Configurações" é realçada por um contorno laranja-escuro.](/assets/images/help/repository/repo-actions-settings.png)
-2. Na seção "Code and automation" da barra lateral, clique em **<svg version="1.1" width="16" height="16" viewBox="0 0 16 16" class="octicon octicon-browser" aria-label="browser" role="img"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 14.25 15H1.75A1.75 1.75 0 0 1 0 13.25ZM14.5 6h-13v7.25c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25Zm-6-3.5v2h6V2.75a.25.25 0 0 0-.25-.25ZM5 2.5v2h2v-2Zm-3.25 0a.25.25 0 0 0-.25.25V4.5h2v-2Z"></path></svg> Pages**.
-3. Para ver seu site publicado, em "GitHub Pages", clique em **<svg version="1.1" width="16" height="16" viewBox="0 0 16 16" class="octicon octicon-link-external" aria-label="link-external" role="img"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1Z"></path></svg> Visit site**.
-
-> \[!NOTE]
-> Poderá levar até 10 minutos para que as alterações no seu site sejam publicadas depois que você efetuar push das alterações no GitHub. Se as alterações no site de GitHub Pages não forem refletidas no navegador após uma hora, confira [Sobre erros de build do Jekyll para sites do GitHub Pages](/pt/pages/setting-up-a-github-pages-site-with-jekyll/about-jekyll-build-errors-for-github-pages-sites).
-> \[!NOTE]
->
-> * Se você estiver publicando por meio de um branch e o seu site não tiver sido publicado automaticamente, verifique se alguém com permissões de administrador e um endereço de email verificado efetuou um push para a fonte de publicação.
-> * Commits enviados por push por um fluxo de trabalho de GitHub Actions que usa o `GITHUB_TOKEN` não disparam um build de GitHub Pages.
-
-## Geradores de site estáticos
-
-O GitHub Pages publica quaisquer arquivos estáticos que você envia para o repositório. É possível criar seus próprios arquivos estáticos ou usar um gerador de site estático para que ele crie o site para você. Também pode personalizar seu próprio processo de criação localmente ou em outro servidor.
-
-Se você usar um processo de build ou um gerador de site estático diferente do Jekyll, poderá escrever um fluxo de trabalho GitHub Actions para criar e publicar seu site. O GitHub fornece modelos de fluxo de trabalho para vários geradores de site estático. Para saber mais, confira [Configurando uma fonte de publicação para seu site GitHub Pages](/pt/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
-
-Se você publicar seu site a partir de um ramo de origem, GitHub Pages usará o Jekyll para criar seu site por padrão. Se você quiser usar um gerador de site estático diferente do Jekyll, recomendamos que você escreva um GitHub Actions para criar e publicar seu site. Caso contrário, desabilite o processo de build do Jekyll criando um arquivo vazio chamado `.nojekyll` na raiz da fonte de publicação e siga as instruções do gerador de site estático para compilar seu site localmente.
-
-> \[!NOTE] GitHub Pages não suporta linguagens do lado do servidor, como PHP, Ruby ou Python.
-
-## Tipos de MIME no GitHub Pages
-
-Um tipo de MIME é um header que um servidor envia a um navegador, fornecendo informações sobre a natureza e o formato dos arquivos que o navegador solicitou. O GitHub Pages aceita mais de 750 tipos de MIME entre milhares de extensões de arquivo. A lista de tipos MIME compatíveis é gerada com base no [projeto mime-db](https://github.com/jshttp/mime-db).
-
-Embora não seja possível especificar tipos de MIME personalizados por arquivo ou repositório, você pode adicionar ou modificar tipos de MIME para uso no GitHub Pages. Para obter mais informações, confira [as diretrizes de contribuição do mime-db](https://github.com/jshttp/mime-db#adding-custom-media-types).
-
-## Próximas etapas
-
-Você pode adicionar mais páginas ao seu site criando novos arquivos. Cada arquivo ficará disponível no site na mesma estrutura de diretórios que a fonte de publicação. Por exemplo, se a fonte de publicação do site do seu projeto for o ramo `gh-pages` e você criar um novo arquivo chamado `/about/contact-us.md` no ramo `gh-pages`, o arquivo estará disponível em `https://<user>.github.io/<repository>/about/contact-us.html`.
-
-Também é possível adicionar um tema para personalizar a aparência do site. Para saber mais, confira [Adicionando um tema ao site GitHub Pages usando o Jekyll](/pt/pages/setting-up-a-github-pages-site-with-jekyll/adding-a-theme-to-your-github-pages-site-using-jekyll).
-
-## Leitura adicional
-
-* [Sobre GitHub Pages e Jekyll](/pt/pages/setting-up-a-github-pages-site-with-jekyll/about-github-pages-and-jekyll).
-* [Resolução de erros de build do Jekyll para sites do GitHub Pages](/pt/pages/setting-up-a-github-pages-site-with-jekyll/troubleshooting-jekyll-build-errors-for-github-pages-sites)
-* [Criar e excluir branches no repositório](/pt/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-and-deleting-branches-within-your-repository)
-* [Criar novos arquivos](/pt/repositories/working-with-files/managing-files/creating-new-files)
-* [Solução de problemas de erros 404 para sites do GitHub Pages](/pt/pages/getting-started-with-github-pages/troubleshooting-404-errors-for-github-pages-sites)
+        setTimeout(() => { irPara('login'); }, 3000);
+    </script>
+</body>
+</html>
