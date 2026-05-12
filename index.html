@@ -3,55 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marrague Niassa</title>
+    <title>Marragué Niassa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body, html { height: 100%; width: 100%; overflow: hidden; background-color: #000; }
-        .bg-overlay {
+        :root {
+            --gold: #e5b94c;
+            --dark: #0c0c0c;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body, html { height: 100%; width: 100%; background-color: #000; color: white; overflow: hidden; }
+
+        /* Fundo fixo para evitar o flash preto */
+        .main-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg');
-            background-size: cover; background-position: center; z-index: 1;
-            transition: filter 1.2s ease, transform 1.2s ease;
+            background-size: cover; background-position: center; z-index: -1;
         }
-        .blurred { filter: blur(12px) brightness(0.6); transform: scale(1.1); }
-        .app-container { position: relative; z-index: 10; height: 100%; width: 100%; }
-        .screen { display: none; height: 100%; width: 100%; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 20px; text-align: center; }
-        .active { display: flex; }
-        .logo { font-size: 58px; font-weight: 800; color: #e5b94c; margin-bottom: 40px; text-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .input-box { width: 100%; max-width: 320px; }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); z-index: 0; transition: 1s;
+        }
+
+        /* Telas */
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            padding: 25px; transition: 0.5s ease-in-out; z-index: 10;
+        }
+        .active { display: flex; animation: fadeIn 0.8s; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .logo-giant { font-size: 65px; font-weight: 900; color: var(--gold); text-shadow: 0 10px 20px rgba(0,0,0,0.6); letter-spacing: -2px; }
+
+        /* Formulários Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px);
+            padding: 35px 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
+            width: 100%; max-width: 350px; text-align: center;
+        }
+
         input {
-            width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-            padding: 20px; border-radius: 40px; color: white; margin-bottom: 15px; outline: none; backdrop-filter: blur(10px); font-size: 17px;
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
+            padding: 18px; border-radius: 15px; color: white; margin-bottom: 15px; outline: none; font-size: 16px;
         }
-        .btn-entrar {
-            width: 100%; background: #000; color: white; border: none; padding: 22px;
-            border-radius: 40px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 16px; margin-top: 15px;
+
+        button {
+            width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 14px;
         }
-        .links { margin-top: 30px; font-size: 15px; line-height: 2.2; color: #ddd; }
-        .version { position: absolute; bottom: 30px; font-size: 11px; opacity: 0.6; width: 100%; }
+
+        .btn-gold { background: var(--gold); color: black; box-shadow: 0 5px 15px rgba(229, 185, 76, 0.3); }
+        .btn-black { background: #000; color: white; margin-top: 10px; }
+        button:active { transform: scale(0.95); }
+
+        /* Dashboard Simulado */
+        .nav-top { position: fixed; top: 0; width: 100%; padding: 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; margin-top: 20px; }
+        .card-item { background: var(--glass); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        
     </style>
 </head>
 <body>
-    <div id="bg" class="bg-overlay"></div>
-    <div class="app-container">
-        <div id="splash" class="screen active"><h1 class="logo">marrague</h1></div>
-        <div id="login" class="screen">
-            <h1 class="logo" style="font-size: 48px;">marrague</h1>
-            <div class="input-box">
-                <input type="text" placeholder="Jasy">
-                <input type="password" placeholder="···">
-                <button class="btn-entrar">ENTRAR</button>
-                <div class="links"><p>Esqueceu a senha?</p><p>Criar conta</p></div>
-            </div>
-            <div class="version">Versão 1.2.0 - Marrague Niassa Delivery & Services</div>
+
+    <div class="main-bg"></div>
+    <div class="overlay" id="overlay"></div>
+
+    <div id="splash" class="screen active">
+        <h1 class="logo-giant">Marragué</h1>
+        <p style="color: var(--gold); letter-spacing: 3px; margin-top: -10px;">PREMIUM SERVICES</p>
+    </div>
+
+    <div id="login" class="screen">
+        <h2 class="logo-giant" style="font-size: 40px; margin-bottom: 30px;">Marragué</h2>
+        <div class="glass-card">
+            <input type="email" id="email" placeholder="Email ou Usuário">
+            <input type="password" id="pass" placeholder="Palavra-passe">
+            <button class="btn-gold" onclick="autenticar()">ENTRAR</button>
+            <p style="margin-top: 20px; font-size: 14px; opacity: 0.8;" onclick="irPara('registro')">Não tem conta? <b style="color:var(--gold)">Criar Conta</b></p>
         </div>
     </div>
+
+    <div id="registro" class="screen">
+        <div class="glass-card">
+            <h3>Criar Nova Conta</h3>
+            <p style="font-size: 12px; margin-bottom: 20px;">Junte-se à elite de Niassa</p>
+            <input type="text" placeholder="Nome Completo">
+            <input type="email" placeholder="Email">
+            <input type="password" placeholder="Criar Senha">
+            <button class="btn-gold" onclick="alert('Conta criada com sucesso!') || irPara('login')">REGISTAR</button>
+            <button class="btn-black" onclick="irPara('login')">VOLTAR</button>
+        </div>
+    </div>
+
+    <div id="userDash" class="screen" style="justify-content: flex-start; padding-top: 100px; overflow-y: auto;">
+        <div class="nav-top">
+            <span>Olá, <b id="uName">Cliente</b></span>
+            <span style="color: var(--gold)"><i class="fas fa-coins"></i> 450 pts</span>
+        </div>
+        <input type="text" placeholder="🔍 Pesquisar Restaurantes ou Hotéis..." style="margin-top: 20px;">
+        <div class="grid-menu">
+            <div class="card-item"><i class="fas fa-utensils"></i><br>Restaurantes</div>
+            <div class="card-item"><i class="fas fa-hotel"></i><br>Moteis</div>
+            <div class="card-item"><i class="fas fa-map-marked-alt"></i><br>Explorar Maps</div>
+            <div class="card-item" onclick="irPara('login')"><i class="fas fa-sign-out-alt"></i><br>Sair</div>
+        </div>
+    </div>
+
     <script>
+        // Transição inicial: Splash para Login
         setTimeout(() => {
-            document.getElementById('splash').classList.remove('active');
-            document.getElementById('login').classList.add('active');
-            document.getElementById('bg').classList.add('blurred');
+            irPara('login');
+            document.getElementById('overlay').style.background = "rgba(0,0,0,0.7)";
         }, 3000);
+
+        function irPara(telaId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(telaId).classList.add('active');
+        }
+
+        function autenticar() {
+            const email = document.getElementById('email').value;
+            if(email === 'admin') {
+                alert('Bem-vindo, Administrador!');
+                irPara('userDash'); // Aqui podes criar uma tela de admin separada
+            } else {
+                irPara('userDash');
+            }
+        }
     </script>
 </body>
 </html>
