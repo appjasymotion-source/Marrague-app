@@ -3,68 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Marragué Niassa v3.0</title>
+    <title>Marragué Niassa v3.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root { --gold: #e5b94c; --gold-dark: #b8933a; --dark: #0a0a0a; --glass: rgba(255,255,255,0.12); --admin-red: #ff4757; --whatsapp: #25d366; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body, html { height: 100%; width: 100%; background: var(--dark); color: white; overflow-x: hidden; }
-        
-        .main-bg { position: fixed; width: 100%; height: 100%; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1445116572660-236099ec97a0?q=80&w=2071&auto=format&fit=crop'); background-size: cover; background-position: center; z-index: -1; }
-        
-        .screen { position: absolute; width: 100%; height: 100%; display: none; flex-direction: column; padding: 20px; z-index: 10; overflow-y: auto; }
-        .active { display: flex; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-        .glass-card { background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 20px; margin-bottom: 20px; }
-        
-        input, select, textarea { width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2); padding: 14px; border-radius: 12px; color: white; margin-bottom: 10px; outline: none; }
-        
-        button { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 13px; }
-        .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #000; }
-        .btn-wa { background: var(--whatsapp); color: white; margin-top: 8px; }
-        
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .menu-item { background: var(--glass); padding: 20px 10px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .menu-item i { font-size: 28px; color: var(--gold); margin-bottom: 8px; display: block; }
-        
-        .result-card { background: white; color: #222; border-radius: 18px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        .card-img { width: 100%; height: 150px; object-fit: cover; background: #eee; }
-        .card-body { padding: 15px; }
-        
-        .loader { width: 40px; height: 40px; border: 4px solid rgba(229,185,76,0.2); border-top: 4px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+    <style>
+        :root { --gold: #e5b94c; --dark: #0a0a0a; --whatsapp: #25d366; }
+        body { background: var(--dark); color: white; font-family: sans-serif; margin: 0; padding: 20px; text-align: center; }
+        .screen { display: none; }
+        .active { display: block; }
+        .card { background: rgba(255,255,255,0.1); border: 1px solid var(--gold); border-radius: 15px; padding: 15px; margin-bottom: 15px; text-align: left; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: var(--gold); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: black; }
+        .btn-wa { background: var(--whatsapp); color: white; margin-top: 5px; }
+        .loader { border: 4px solid #333; border-top: 4px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        img { width: 100%; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="main-bg"></div>
-
-    <div id="splash" class="screen active" style="justify-content:center; align-items:center;">
-        <div style="text-align: center;">
-            <h1 style="font-size: 40px; color: var(--gold); font-weight: 800;">MARRAGUÉ</h1>
-            <p style="letter-spacing: 4px; font-size: 10px; opacity: 0.8;">NIASSA EXPLORER</p>
-            <div class="loader"></div>
-        </div>
+    <div id="splash" class="screen active">
+        <h1 style="color: var(--gold); margin-top: 50px;">MARRAGUÉ</h1>
+        <p>NIASSA EXPLORER</p>
+        <div class="loader"></div>
     </div>
 
-    <div id="login" class="screen" style="justify-content:center;">
-        <div class="glass-card">
-            <h2 style="color: var(--gold); margin-bottom: 15px;">Acesso</h2>
-            <input type="email" id="emailField" placeholder="Email">
-            <input type="password" id="passField" placeholder="Palavra-passe">
-            <button class="btn-gold" onclick="autenticar()">Entrar</button>
-        </div>
+    <div id="login" class="screen">
+        <h2 class="gold">Entrar</h2>
+        <input type="email" id="email" placeholder="Seu email">
+        <button onclick="fazerLogin()">ENTRAR</button>
     </div>
 
-    <div id="userDash" class="screen">
-        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 id="userName" style="color: var(--gold); font-size: 18px;">Olá, Explorador</h2>
-            <button onclick="logout()" style="width:auto; padding:5px 12px; background:rgba(255,255,255,0.1); color:white; font-size:10px;">SAIR</button>
-        </div>
+    <div id="menu" class="screen">
+        <h2 class="gold">Explorar Cuamba</h2>
+        <button onclick="abrirCat('Restaurante')" style="margin-bottom: 10px;">RESTAURANTES</button>
+        <button onclick="abrirCat('Hotel')" style="margin-bottom: 10px;">HOTÉIS</button>
+        <button onclick="abrirCat('Loja')">LOJAS</button>
+        <p onclick="fazerLogin()" style="font-size: 12px; margin-top: 20px;">Área do Admin</p>
+    </div>
 
-        <div id="mainMenu" class="menu-grid">
-            <div class="menu-item" onclick="abrirCategoria('Restaurante')"><i class="fas fa-utensils"></i>
+    <div id="lista" class="screen">
+        <button onclick="irPara('menu')" style="background: #333; color: white;">VOLTAR</button>
+        <h3 id="catNome" class="gold"></h3>
+        <div id="container"></div>
+    </div>
 
+    <div id="admin" class="screen">
+        <h2 style="color: red;">PAINEL ADMIN</h2>
+        <input type="text" id="nome" placeholder="Nome do local">
+        <select id="cat">
+            <option value="Restaurante">Restaurante</option>
+            <option value="Hotel">Hotel</option>
+            <option value="Loja">Loja</option>
+        </select>
+        <input type="text" id="tel" placeholder="Telefone (84...)">
+        <input type="text" id="foto" placeholder="Link da foto">
+        <textarea id="desc" placeholder="Descrição"></textarea>
+        <button onclick="salvar()">PUBLICAR</button>
+        <button onclick="irPara('menu')" style="margin-top: 10px; background: #333; color: white;">SAIR</button>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO REAL DO SEU PROJETO
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZ_V-SfLdEXuPlU7W4uyWHvC_-Zm94jxU",
+            authDomain: "marragueapp.firebaseapp.com",
+            projectId: "marragueapp",
+            storageBucket: "marragueapp.firebasestorage.app",
+            messagingSenderId: "863284423517",
+            appId: "1:863284423517:web:c8883f5b0875d7b4a7d6b4"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function irPara(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function fazerLogin() {
+            const mail = document.getElementById('email').value.toLowerCase();
+            if(mail === "admin@marrague.com") irPara('admin');
+            else irPara('menu');
+        }
+
+        async function salvar() {
+            const dados = {
+                nome: document.getElementById('nome').value,
+                categoria: document.getElementById('cat').value,
+                telefone: document.getElementById('tel').value,
+                foto: document.getElementById('foto').value || 'https://via.placeholder.com/300',
+                desc: document.getElementById('desc').value
+            };
+            await db.collection("locais").add(dados);
+            alert("Salvo com sucesso!");
+        }
+
+        function abrirCat(c) {
+            irPara('lista');
+            document.getElementById('catNome').innerText = c;
+            const container = document.getElementById('container');
+            container.innerHTML = "Carregando...";
+
+            db.collection("locais").where("categoria", "==", c).onSnapshot(snap => {
+                container.innerHTML = "";
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    container.innerHTML += `
+                        <div class="card">
+                            <img src="${d.foto}">
+                            <h3>${d.nome}</h3>
+                            <p>${d.desc}</p>
+                            <button onclick="window.location.href='tel:${d.telefone}'">LIGAR</button>
+                            <button class="btn-wa" onclick="window.location.href='https://wa.me/258${d.telefone}'">WHATSAPP</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // Timer da Splash
+        setTimeout(() => { irPara('login'); }, 3000);
+    </script>
+</body>
+</html>
