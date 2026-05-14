@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Marragué Niassa v5.0</title>
+    <title>Marragué Niassa Pro v6.0</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -12,92 +12,78 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
-        :root { --gold: #e5b94c; --dark: #0d0d0d; --card-bg: #1a1a1a; --text: #ffffff; --red: #ff4444; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: var(--dark); color: var(--text); margin: 0; padding: 0; user-select: none; }
+        :root { --gold: #e5b94c; --dark: #0d0d0d; --card-bg: #1a1a1a; --text: #ffffff; --red: #ff4444; --green: #25d366; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--dark); color: var(--text); margin: 0; padding: 0; }
         
-        /* Sistema de Telas */
-        .screen { display: none; min-height: 100vh; padding-bottom: 80px; animation: fadeIn 0.25s ease-in-out; }
+        /* Telas */
+        .screen { display: none; min-height: 100vh; padding-bottom: 80px; animation: fadeIn 0.2s ease; }
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Utilitários de Input e Botões */
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; }
+        /* Inputs e Botões */
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 12px; color: #aaa; margin-bottom: 4px; }
         .field { background: #222; border: 1px solid #333; color: white; padding: 14px; border-radius: 10px; width: 100%; font-size: 15px; }
-        .field:focus { border-color: var(--gold); outline: none; }
-        .btn-gold { background: var(--gold); color: black; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
-        .btn-gold:active { transform: scale(0.98); }
+        .btn-gold { background: var(--gold); color: black; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 15px; text-transform: uppercase; margin-top: 10px; }
+        .btn-danger { background: var(--red); color: white; }
 
-        /* Estilização da Tela de Autenticação */
-        .auth-container { max-width: 400px; margin: 0 auto; padding: 40px 20px; text-align: center; }
-        .auth-logo { color: var(--gold); font-size: 32px; font-weight: 900; letter-spacing: 3px; margin-bottom: 5px; }
-        
-        /* Cabeçalho do App */
-        .app-header { padding: 20px; background: var(--dark); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222; }
-        .user-greeting { font-size: 14px; color: #aaa; }
-        .app-title { font-size: 22px; font-weight: bold; margin: 2px 0 0 0; letter-spacing: 0.5px; }
+        /* Cabeçalho */
+        .app-header { padding: 20px; background: var(--dark); border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .app-title { font-size: 22px; font-weight: bold; margin: 0; color: var(--gold); }
 
-        /* Categorias do Menu Principal */
-        .cats-container { display: flex; justify-content: space-between; padding: 10px 20px; gap: 12px; }
-        .cat-box { background: var(--card-bg); flex: 1; text-align: center; padding: 15px 10px; border-radius: 15px; border: 1px solid #252525; cursor: pointer; }
-        .cat-box i { font-size: 22px; color: var(--gold); margin-bottom: 8px; display: block; }
-        .cat-box span { font-size: 12px; font-weight: 500; color: #ccc; }
+        /* Categorias */
+        .cats-container { display: flex; justify-content: space-between; padding: 15px 20px; gap: 10px; }
+        .cat-box { background: var(--card-bg); flex: 1; text-align: center; padding: 12px; border-radius: 12px; border: 1px solid #252525; cursor: pointer; }
+        .cat-box i { font-size: 20px; color: var(--gold); margin-bottom: 6px; display: block; }
+        .cat-box span { font-size: 11px; color: #ccc; }
 
-        /* Secções de Conteúdo */
-        .section-title { font-size: 14px; color: var(--gold); font-weight: bold; letter-spacing: 1px; padding: 20px 20px 10px 20px; margin: 0; text-transform: uppercase; }
-        
-        /* Lista e Cards de Itens */
+        /* Cards do Usuário */
         .items-list { padding: 0 20px; }
-        .item-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; margin-bottom: 15px; border: 1px solid #252525; display: flex; height: 110px; position: relative; }
-        .item-card img { width: 110px; height: 110px; object-fit: cover; }
-        .item-details { padding: 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .item-name { font-size: 16px; font-weight: bold; margin: 0; color: #fff; }
-        .item-sub { font-size: 13px; color: #aaa; margin: 2px 0; }
-        .badge-vip { position: absolute; top: 8px; right: 8px; background: var(--gold); color: black; font-size: 9px; font-weight: bold; padding: 3px 6px; border-radius: 4px; text-transform: uppercase; }
-        .btn-wa-direct { background: #25d366; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; align-self: flex-start; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .item-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; margin-bottom: 15px; border: 1px solid #252525; position: relative; }
+        .item-card img { width: 100%; height: 160px; object-fit: cover; }
+        .item-details { padding: 15px; }
+        .badge-vip { position: absolute; top: 10px; right: 10px; background: var(--gold); color: black; font-size: 10px; font-weight: bold; padding: 4px 8px; border-radius: 6px; }
 
-        /* Aba do Mapa */
-        #map-container { width: 100%; height: calc(100vh - 140px); background: #111; }
+        /* Cards de Gestão do Admin */
+        .adm-card { background: #222; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--gold); }
 
-        /* Aba do Perfil */
-        .profile-header { text-align: center; padding: 40px 20px; }
-        .avatar-dummy { width: 90px; height: 90px; background: var(--gold); border-radius: 50%; margin: 0 auto 15px auto; }
-        .profile-name { font-size: 24px; font-weight: bold; margin: 0; }
-        .profile-points { color: var(--gold); font-size: 15px; margin-top: 5px; font-weight: 500; }
-        .profile-menu { padding: 0 20px; }
-        .menu-row { background: var(--card-bg); padding: 16px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px solid #222; }
-
-        /* Menu de Navegação Inferior Móvel */
+        /* Barra de Navegação Inferior */
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #0a0a0a; border-top: 1px solid #222; display: flex; height: 65px; z-index: 999; }
-        .nav-item { flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #666; cursor: pointer; transition: 0.2s; }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item { flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #555; cursor: pointer; }
+        .nav-item i { font-size: 18px; margin-bottom: 4px; }
         .nav-item span { font-size: 11px; }
         .nav-item.active { color: var(--gold); }
 
-        /* Tela Administrativa */
-        .admin-header { background: #1a0505; border-bottom: 1px solid #401010; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        #map-container { width: 100%; height: calc(100vh - 145px); }
     </style>
 </head>
 <body>
 
     <div id="scr-auth" class="screen active">
-        <div class="auth-container">
-            <div class="auth-logo">MARRAGUÉ</div>
-            <p style="color: #666; margin-bottom: 40px;">NIASSA EXPLORER</p>
+        <div style="padding: 40px 20px; text-align: center;">
+            <h1 style="color: var(--gold); font-size: 36px; margin-bottom: 0; letter-spacing: 2px;">MARRAGUÉ</h1>
+            <p style="color: #666; margin-top: 5px; font-size: 14px;">GERREIROS DE NIASSA</p>
             
-            <div id="auth-fields">
-                <div class="input-group">
-                    <input type="email" id="auth-email" class="field" placeholder="Email">
+            <div style="margin-top: 40px; text-align: left;">
+                <div class="input-group" id="group-nome" style="display: none;">
+                    <label>Seu Nome:</label>
+                    <input type="text" id="auth-nome" class="field" placeholder="Ex: João Silva">
                 </div>
                 <div class="input-group">
-                    <input type="password" id="auth-pass" class="field" placeholder="Palavra-passe">
+                    <label>Email:</label>
+                    <input type="email" id="auth-email" class="field" placeholder="seuemail@gmail.com">
+                </div>
+                <div class="input-group">
+                    <label>Palavra-passe:</label>
+                    <input type="password" id="auth-pass" class="field" placeholder="******">
                 </div>
                 
-                <button class="btn-gold" id="btn-main-auth" onclick="executarAuth()">Entrar</button>
+                <button class="btn-gold" id="btn-auth" onclick="processarAutenticacao()">Entrar</button>
                 
-                <p id="toggle-auth-text" style="margin-top: 25px; color: #aaa; font-size: 14px;">
-                    Novo por aqui? <span style="color: var(--gold); cursor: pointer; font-weight: bold;" onclick="alternarModoAuth()">Criar Conta</span>
+                <p style="text-align: center; margin-top: 25px; color: #aaa; font-size: 14px;">
+                    <span id="auth-toggle-text">Novo por aqui?</span> 
+                    <span style="color: var(--gold); cursor: pointer; font-weight: bold;" id="auth-toggle-btn" onclick="alternarAbasAuth()">Criar Conta</span>
                 </p>
             </div>
         </div>
@@ -107,131 +93,87 @@
         
         <div id="scr-home" class="screen">
             <div class="app-header">
-                <span class="user-greeting">Olá, Parceiro!</span>
-                <h1 class="app-title">Marragué Niassa</h1>
+                <div>
+                    <span style="font-size: 12px; color: #888;">Bem-vindo ao App</span>
+                    <h1 id="txt-user-nome" style="font-size: 18px; margin: 0; color: white;">Utilizador</h1>
+                </div>
+                <span style="background: #222; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: var(--gold); font-weight: bold;"><i class="fas fa-coins"></i> 1.250 pts</span>
             </div>
 
             <div class="cats-container">
-                <div class="cat-box" onclick="filtrarCategoria('Restaurante')">
-                    <i class="fas fa-utensils"></i>
-                    <span>Restôs</span>
-                </div>
-                <div class="cat-box" onclick="filtrarCategoria('Hotel')">
-                    <i class="fas fa-bed"></i>
-                    <span>Motéis</span>
-                </div>
-                <div class="cat-box" onclick="filtrarCategoria('Entrega')">
-                    <i class="fas fa-truck"></i>
-                    <span>Entregas</span>
-                </div>
+                <div class="cat-box" onclick="carregarProdutos('Restaurante')"><i class="fas fa-utensils"></i><span>Restôs</span></div>
+                <div class="cat-box" onclick="carregarProdutos('Hotel')"><i class="fas fa-bed"></i><span>Motéis</span></div>
+                <div class="cat-box" onclick="carregarProdutos('Entrega')"><i class="fas fa-truck"></i><span>Entregas</span></div>
             </div>
 
-            <h2 class="section-title" id="lista-titulo">Destaques VIP</h2>
-            <div class="items-list" id="home-items-render">
-                </div>
+            <h2 style="font-size: 14px; color: var(--gold); padding: 10px 20px; margin: 0; text-transform: uppercase;" id="titulo-home">Destaques VIP</h2>
+            <div class="items-list" id="render-home-locais"></div>
         </div>
 
         <div id="scr-mapa" class="screen">
-            <div class="app-header"><h1 class="app-title">Mapa Niassa</h1></div>
+            <div class="app-header"><h1 class="app-title">Mapa de Cuamba</h1></div>
             <div id="map-container"></div>
         </div>
 
-        <div id="scr-perfil" class="screen">
-            <div class="profile-header">
-                <div class="avatar-dummy"></div>
-                <h2 class="profile-name">Membro VIP</h2>
-                <div class="profile-points">1.250 Pontos</div>
-            </div>
-
-            <div class="profile-menu">
-                <div class="menu-row">
-                    <span><i class="fas fa-history" style="margin-right: 10px; color: var(--gold);"></i> Minhas Visitas</span>
-                    <i class="fas fa-chevron-right" style="color: #404040;"></i>
+        <div id="scr-orders" class="screen">
+            <div class="app-header"><h1 class="app-title">Minhas Encomendas</h1></div>
+            <div class="items-list" id="render-cliente-pedidos" style="padding-top: 20px;">
                 </div>
-                <div class="menu-row" onclick="irParaAba('mapa')">
-                    <span><i class="fas fa-map-marked-alt" style="margin-right: 10px; color: var(--gold);"></i> Ver Registos no Mapa</span>
-                    <i class="fas fa-chevron-right" style="color: #404040;"></i>
-                </div>
-                <button class="btn-gold" style="background: #ff4444; color: white; margin-top: 30px;" onclick="fazerLogout()">Sair do App</button>
-            </div>
         </div>
 
         <div class="nav-bar">
-            <div class="nav-item active" id="nav-home" onclick="irParaAba('home')">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
-            </div>
-            <div class="nav-item" id="nav-mapa" onclick="irParaAba('mapa')">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>Mapa</span>
-            </div>
-            <div class="nav-item" id="nav-perfil" onclick="irParaAba('perfil')">
-                <i class="fas fa-user"></i>
-                <span>Perfil</span>
-            </div>
+            <div class="nav-item active" id="nav-home" onclick="mudarAba('home')"><i class="fas fa-home"></i><span>Home</span></div>
+            <div class="nav-item" id="nav-mapa" onclick="mudarAba('mapa')"><i class="fas fa-map-marker-alt"></i><span>Mapa</span></div>
+            <div class="nav-item" id="nav-orders" onclick="mudarAba('orders')"><i class="fas fa-shopping-bag"></i><span>Pedidos</span></div>
+            <div class="nav-item" onclick="sairDoApp()"><i class="fas fa-sign-out-alt"></i><span>Sair</span></div>
         </div>
     </div>
 
-
     <div id="scr-admin" class="screen">
-        <div class="admin-header">
-            <h2 style="color: var(--red); margin:0; font-size: 18px;"><i class="fas fa-user-shield"></i> MODO GESTOR</h2>
-            <button style="background: #333; border: none; color: white; padding: 8px 15px; border-radius: 8px; font-weight: bold;" onclick="fazerLogout()">Desligar</button>
+        <div class="app-header" style="background: #1a0808;">
+            <h1 class="app-title" style="color: var(--red);"><i class="fas fa-user-shield"></i> PAINEL GESTOR</h1>
+            <button style="background: #333; border: none; color: white; padding: 8px 12px; border-radius: 8px;" onclick="sairDoApp()">Sair</button>
         </div>
 
         <div style="padding: 20px;">
-            <h3 style="margin-top: 0; color: var(--gold);">Cadastrar Novo Ponto</h3>
-            
-            <div class="input-group">
-                <label>Nome do Local:</label>
-                <input type="text" id="adm-nome" class="field" placeholder="Ex: Restaurante Elite">
-            </div>
-            <div class="input-group">
-                <label>Cidade / Distrito:</label>
-                <input type="text" id="adm-localidade" class="field" placeholder="Ex: Cuamba ou Lichinga">
-            </div>
-            <div class="input-group">
-                <label>Categoria:</label>
-                <select id="adm-cat" class="field">
-                    <option value="Restaurante">Restaurante</option>
-                    <option value="Hotel">Hotel / Motel</option>
-                    <option value="Entrega">Entrega / Serviços</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Contacto de Telefone (Sem espaços):</label>
-                <input type="tel" id="adm-tel" class="field" placeholder="Ex: 841234567">
-            </div>
-            <div class="input-group">
-                <label>URL da Foto do Estabelecimento:</label>
-                <input type="text" id="adm-foto" class="field" placeholder="https://link.com/imagem.jpg">
-            </div>
-            
-            <div style="display: flex; gap: 10px;">
-                <div class="input-group" style="flex: 1;">
-                    <label>Latitude:</label>
-                    <input type="number" step="any" id="adm-lat" class="field" value="-14.80">
-                </div>
-                <div class="input-group" style="flex: 1;">
-                    <label>Longitude:</label>
-                    <input type="number" step="any" id="adm-lng" class="field" value="36.53">
-                </div>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn-gold" style="margin:0; flex:1;" onclick="controlarPainelAdmin('add')">Adicionar</button>
+                <button class="btn-gold" style="margin:0; flex:1; background:#333; color:white;" id="btn-aba-gerir" onclick="controlarPainelAdmin('gerir')">Gerir Dados</button>
             </div>
 
-            <div class="input-group">
-                <label>Status Promocional:</label>
-                <select id="adm-vip" class="field">
-                    <option value="nao">Conta Padrão</option>
-                    <option value="sim">Destaque VIP</option>
-                </select>
+            <div id="adm-box-adicionar">
+                <div class="input-group"><label>Nome do Local:</label><input type="text" id="adm-nome" class="field"></div>
+                <div class="input-group"><label>Distrito/Bairro:</label><input type="text" id="adm-bairro" class="field" placeholder="Ex: Cuamba Centro"></div>
+                <div class="input-group">
+                    <label>Categoria:</label>
+                    <select id="adm-cat" class="field">
+                        <option value="Restaurante">Restaurante</option>
+                        <option value="Hotel">Hotel / Motel</option>
+                        <option value="Entrega">Entrega / Serviço</option>
+                    </select>
+                </div>
+                <div class="input-group"><label>Contacto WhatsApp (Ex: 841234567):</label><input type="tel" id="adm-tel" class="field"></div>
+                <div class="input-group"><label>Link da Imagem:</label><input type="text" id="adm-foto" class="field"></div>
+                <div style="display: flex; gap:10px;">
+                    <div class="input-group" style="flex:1;"><label>Lat:</label><input type="number" step="any" id="adm-lat" class="field" value="-14.80"></div>
+                    <div class="input-group" style="flex:1;"><label>Lng:</label><input type="number" step="any" id="adm-lng" class="field" value="36.53"></div>
+                </div>
+                <div class="input-group">
+                    <label>Promover para VIP?</label>
+                    <select id="adm-vip" class="field"><option value="nao">Não (Normal)</option><option value="sim">Sim (Destaque VIP)</option></select>
+                </div>
+                <button class="btn-gold" id="btn-publicar" onclick="salvarPontoNoFirebase()">Publicar Agora</button>
             </div>
 
-            <button class="btn-gold" id="btnSalvar" style="margin-top: 15px;" onclick="salvarPontoFirebase()">Publicar no Marragué</button>
+            <div id="adm-box-gerir" style="display: none;">
+                <h3 style="color: var(--gold); font-size: 16px;">Locais Ativos</h3>
+                <div id="render-adm-lista"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Configuração do teu Banco de Dados Firebase do Projeto Marragué
+        // Configuração Firebase Segura do seu Projeto Marragué
         const firebaseConfig = {
             apiKey: "AIzaSyAZ_V-SfLdEXuPlU7W4uyWHvC_-Zm94jxU",
             authDomain: "marragueapp.firebaseapp.com",
@@ -243,216 +185,280 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Estados Globais de Controle
-        let modoAuthAtual = "login"; // login ou registro
-        let mapaLeaflet = null;
-        let marcadoresMapa = [];
+        let contaModo = "login"; 
+        let objMapa = null;
+        let marcadores = [];
+        let usuarioSessaoEmail = "";
+        let usuarioSessaoNome = "Explorador";
 
-        // Controlador de Telas de Login/Admin
-        function alternarModoAuth() {
-            const btn = document.getElementById('btn-main-auth');
-            const txt = document.getElementById('toggle-auth-text');
-            if (modoAuthAtual === "login") {
-                modoAuthAtual = "registro";
+        // Alternador de Telas de Autenticação
+        function alternarAbasAuth() {
+            const btn = document.getElementById('btn-auth');
+            const toggleBtn = document.getElementById('auth-toggle-btn');
+            const toggleTxt = document.getElementById('auth-toggle-text');
+            const campoNome = document.getElementById('group-nome');
+
+            if(contaModo === "login") {
+                contaModo = "registo";
                 btn.innerText = "Criar Minha Conta";
-                txt.innerHTML = 'Já possui cadastro? <span style="color:var(--gold); font-weight:bold;" onclick="alternarModoAuth()">Entrar</span>';
+                toggleBtn.innerText = "Fazer Login";
+                toggleTxt.innerText = "Já tem uma conta?";
+                campoNome.style.display = "block";
             } else {
-                modoAuthAtual = "login";
+                contaModo = "login";
                 btn.innerText = "Entrar";
-                txt.innerHTML = 'Novo por aqui? <span style="color:var(--gold); font-weight:bold;" onclick="alternarModoAuth()">Criar Conta</span>';
+                toggleBtn.innerText = "Criar Conta";
+                toggleTxt.innerText = "Novo por aqui?";
+                campoNome.style.display = "none";
             }
         }
 
-        // Lógica Principal de Autenticação baseada em Firestore
-        function executarAuth() {
+        // Processo de Login e Registo Real via Firestore
+        function processarAutenticacao() {
             const email = document.getElementById('auth-email').value.toLowerCase().trim();
             const pass = document.getElementById('auth-pass').value.trim();
+            const nome = document.getElementById('auth-nome').value.trim();
 
-            if (!email || !pass) return alert("Por favor, preencha todos os campos!");
+            if(!email || !pass) return alert("Preencha os dados de acesso!");
 
-            // LOGIN DO ADMINISTRADOR SUPREMO
-            if (email === "admin@marrague.com") {
+            // CONTROLADOR DO ADMINISTRADOR
+            if(email === "admin@marrague.com" && pass === "admin123") {
                 document.getElementById('scr-auth').classList.remove('active');
                 document.getElementById('scr-admin').classList.add('active');
+                controlarPainelAdmin('add');
                 return;
             }
 
-            // Simulação nativa de Login/Registro persistido via Firestore para utilizadores comuns
-            if (modoAuthAtual === "registro") {
-                db.collection("usuarios").doc(email).set({ email: email, pass: pass, vip: false, pontos: 1250 })
+            if(contaModo === "registo") {
+                if(!nome) return alert("Introduza o seu nome para o registo!");
+                db.collection("clientes").doc(email).set({ nome: nome, email: email, senha: pass })
                 .then(() => {
-                    alert("Conta criada com sucesso! Bem-vindo ao Marragué.");
-                    entrarNoAplicativoUsuario();
+                    alert("Conta criada com sucesso!");
+                    liberarAppUsuario(email, nome);
                 });
             } else {
-                db.collection("usuarios").doc(email).get().then((doc) => {
-                    if (doc.exists && doc.data().pass === pass) {
-                        entrarNoAplicativoUsuario();
+                db.collection("clientes").doc(email).get().then(doc => {
+                    if(doc.exists && doc.data().senha === pass) {
+                        liberarAppUsuario(email, doc.data().nome);
                     } else {
-                        alert("Dados incorretos ou utilizador não registado!");
+                        alert("E-mail ou Palavra-passe incorretos!");
                     }
-                });
+                }).catch(() => alert("Erro ao conectar com a base de dados."));
             }
         }
 
-        function entrarNoAplicativoUsuario() {
+        function liberarAppUsuario(email, nome) {
+            usuarioSessaoEmail = email;
+            usuarioSessaoNome = nome;
+            document.getElementById('txt-user-nome').innerText = nome;
             document.getElementById('scr-auth').classList.remove('active');
             document.getElementById('main-app-structure').style.display = "block";
-            irParaAba('home');
+            mudarAba('home');
         }
 
-        function fazerLogout() {
+        function sairDoApp() {
             document.getElementById('main-app-structure').style.display = "none";
             document.getElementById('scr-admin').classList.remove('active');
-            document.getElementById('scr-home').classList.remove('active');
-            document.getElementById('scr-mapa').classList.remove('active');
-            document.getElementById('scr-perfil').classList.remove('active');
-            
+            document.getElementById('scr-auth').classList.add('active');
             document.getElementById('auth-email').value = "";
             document.getElementById('auth-pass').value = "";
-            document.getElementById('scr-auth').classList.add('active');
         }
 
-        // Controlador da barra de navegação inferior (Abas)
-        function irParaAba(abaId) {
+        // Navegação das Abas do Usuário
+        function mudarAba(aba) {
             document.querySelectorAll('#main-app-structure .screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             
-            document.getElementById('scr-' + abaId).classList.add('active');
-            document.getElementById('nav-' + abaId).classList.add('active');
-            
-            if (abaId === 'home') carregarPontosDoFirebase();
-            if (abaId === 'mapa') inicializarOuAtualizarMapa();
+            document.getElementById('scr-' + aba).classList.add('active');
+            document.getElementById('nav-' + aba).classList.add('active');
+
+            if(aba === 'home') carregarProdutos();
+            if(aba === 'mapa') renderizarMapaOSM();
+            if(aba === 'orders') carregarHistoricoPedidos();
         }
 
-        // Carrega dados em Tempo Real da Coleção do Firebase
-        function carregarPontosDoFirebase(filtroCategoria = null) {
-            const container = document.getElementById('home-items-render');
-            container.innerHTML = '<p style="text-align:center;color:#666;padding:20px;">Carregando dados reais...</p>';
+        // Carregar dados removendo os filtros complexos para evitar erros de índice
+        function carregarProdutos(filtroCat = null) {
+            const box = document.getElementById('render-home-locais');
+            box.innerHTML = '<p style="text-align:center;color:#666;">Buscando registos...</p>';
+            
+            db.collection("locais").onSnapshot(snap => {
+                box.innerHTML = "";
+                let totalExibido = 0;
+                
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const id = doc.id;
 
-            let query = db.collection("locais");
-            if (filtroCategoria) {
-                query = query.where("categoria", "==", filtroCategoria);
-                document.getElementById('lista-titulo').innerText = "Categoria: " + filtroCategoria;
-            } else {
-                query = query.where("vip", "==", "sim");
-                document.getElementById('lista-titulo').innerText = "Destaques VIP";
-            }
+                    // Filtros feitos diretamente via código (Impede o erro de compilação do Firebase)
+                    if(filtroCat && d.categoria !== filtroCat) return;
+                    if(!filtroCat && d.vip !== "sim") return;
 
-            query.onSnapshot(snapshot => {
-                container.innerHTML = "";
-                if (snapshot.empty) {
-                    container.innerHTML = '<p style="text-align:center;color:#666;padding:20px;">Nenhum registo encontrado para esta seleção.</p>';
-                    return;
-                }
+                    totalExibido++;
+                    const badge = d.vip === "sim" ? '<span class="badge-vip">VIP</span>' : '';
 
-                snapshot.forEach(doc => {
-                    const dados = doc.data();
-                    const vipBadge = dados.vip === "sim" ? '<span class="badge-vip">VIP</span>' : '';
-                    
-                    container.innerHTML += `
+                    box.innerHTML += `
                         <div class="item-card">
-                            <img src="${dados.foto}" onerror="this.src='https://via.placeholder.com/150?text=Marrague'">
-                            ${vipBadge}
+                            <img src="${d.foto || 'https://via.placeholder.com/400x160?text=Marrague+Niassa'}" onerror="this.src='https://via.placeholder.com/400x160?text=Imagem+Indisponivel'">
+                            ${badge}
                             <div class="item-details">
-                                <div>
-                                    <h3 class="item-name">${dados.nome}</h3>
-                                    <p class="item-sub"><i class="fas fa-map-marker-alt" style="color:var(--gold);"></i> ${dados.localidade}</p>
-                                </div>
-                                <button class="btn-wa-direct" onclick="abrirWhatsApp('${dados.tel}', '${dados.nome}')">
-                                    <i class="fab fa-whatsapp"></i> Pedir comida / Reservar
+                                <h3 style="margin:0;color:var(--gold);font-size:17px;">${d.nome}</h3>
+                                <p style="margin:4px 0;font-size:13px;color:#aaa;"><i class="fas fa-map-marker-alt"></i> ${d.bairro}</p>
+                                <button class="btn-gold" style="background:var(--green);color:white;padding:8px;font-size:12px;margin:0;" onclick="fazerPedido('${id}', '${d.nome}', '${d.tel}')">
+                                    <i class="fab fa-whatsapp"></i> Fazer Pedido / Reservar
                                 </button>
                             </div>
+                        </div>
+                    `;
+                });
+
+                if(totalExibido === 0) {
+                    box.innerHTML = '<p style="text-align:center;color:#666;padding:20px;">Nenhum registo encontrado.</p>';
+                }
+            });
+        }
+
+        // Registar pedido e mandar para o WhatsApp
+        async function fazerPedido(idLocal, nomeLocal, telefone) {
+            const notaPedido = `Pedido feito via App Marragué por ${usuarioSessaoNome}`;
+            
+            // Salva o registro da encomenda no Firebase do Admin
+            await db.collection("encomendas").add({
+                cliente: usuarioSessaoNome,
+                email: usuarioSessaoEmail,
+                local: nomeLocal,
+                data: new Date().toLocaleDateString()
+            });
+
+            const textoMsg = encodeURIComponent(`Olá, ${nomeLocal}! Vi o vosso anúncio no Marragué App e quero fazer um pedido/reserva.`);
+            window.location.href = `https://wa.me/258${telefone}?text=${textoMsg}`;
+        }
+
+        function carregarHistoricoPedidos() {
+            const div = document.getElementById('render-cliente-pedidos');
+            div.innerHTML = "";
+            db.collection("encomendas").where("email", "==", usuarioSessaoEmail).get().then(snap => {
+                if(snap.empty) {
+                    div.innerHTML = '<p style="text-align:center;color:#666;">Nenhuma encomenda feita ainda.</p>';
+                    return;
+                }
+                snap.forEach(doc => {
+                    const p = doc.data();
+                    div.innerHTML += `
+                        <div style="background:var(--card-bg);padding:15px;border-radius:10px;margin-bottom:10px;border:1px solid #333;">
+                            <h3 style="margin:0;color:var(--gold);font-size:15px;">${p.local}</h3>
+                            <p style="margin:5px 0 0 0;font-size:12px;color:#888;">Data do pedido: ${p.data}</p>
                         </div>
                     `;
                 });
             });
         }
 
-        function filtrarCategoria(cat) {
-            carregarPontosDoFirebase(cat);
-        }
-
-        function abrirWhatsApp(numero, nomeLocal) {
-            const msg = encodeURIComponent(`Olá! Vi o vosso anúncio no aplicativo Marragué Niassa e gostaria de solicitar informações/serviços.`);
-            window.location.href = `https://wa.me/258${numero.replace(/\s/g, '')}?text=${msg}`;
-        }
-
-        // Lógica do Mapa de Localização Profissional (Leaflet OpenStreetMap)
-        function inicializarOuAtualizarMapa() {
+        // Sistema de Mapa de Localização
+        function renderizarMapaOSM() {
             setTimeout(() => {
-                if (!mapaLeaflet) {
-                    // Centralizado em Cuamba/Niassa automaticamente
-                    mapaLeaflet = L.map('map-container').setView([-14.803, 36.537], 13);
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                        attribution: 'Marragué Niassa'
-                    }).addTo(mapaLeaflet);
+                if (!objMapa) {
+                    objMapa = L.map('map-container').setView([-14.803, 36.537], 14);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(objMapa);
                 } else {
-                    mapaLeaflet.invalidateSize();
+                    objMapa.invalidateSize();
                 }
 
-                // Limpar marcadores antigos
-                marcadoresMapa.forEach(m => mapaLeaflet.removeLayer(m));
-                marcadoresMapa = [];
+                marcadores.forEach(m => objMapa.removeLayer(m));
+                marcadores = [];
 
-                // Puxar as coordenadas reais salvas pelo Admin no Firebase
-                db.collection("locais").get().then(snapshot => {
-                    snapshot.forEach(doc => {
-                        const d = doc.data();
-                        if (d.lat && d.lng) {
-                            const marker = L.marker([d.lat, d.lng]).addTo(mapaLeaflet)
-                                .bindPopup(`<b style="color:black;">${d.nome}</b><br><span style="color:gray;">${d.categoria}</span>`);
-                            marcadoresMapa.push(marker);
+                db.collection("locais").get().then(snap => {
+                    snap.forEach(doc => {
+                        const p = doc.data();
+                        if(p.lat && p.lng) {
+                            const m = L.marker([p.lat, p.lng]).addTo(objMapa)
+                            .bindPopup(`<b style="color:black;">${p.nome}</b><br><span style="color:gray;">${p.categoria}</span>`);
+                            marcadores.push(m);
                         }
                     });
                 });
-            }, 300);
+            }, 250);
         }
 
-        // Operação de Escrita de Dados Completa (Admin)
-        async function salvarPontoFirebase() {
-            const btn = document.getElementById('btnSalvar');
-            const nome = document.getElementById('adm-nome').value.trim();
-            const localidade = document.getElementById('adm-localidade').value.trim();
-            const tel = document.getElementById('adm-tel').value.trim();
-            const lat = parseFloat(document.getElementById('adm-lat').value);
-            const lng = parseFloat(document.getElementById('adm-lng').value);
-
-            if (!nome || !localidade || !tel) {
-                return alert("Erro: Nome, Localidade e Telefone são campos estritamente obrigatórios!");
+        // CONTROLE GERENCIAL DO GESTOR (ADMIN)
+        function controlarPainelAdmin(modo) {
+            const boxAdd = document.getElementById('adm-box-adicionar');
+            const boxGerir = document.getElementById('adm-box-gerir');
+            
+            if(modo === 'add') {
+                boxAdd.style.display = "block";
+                boxGerir.style.display = "none";
+            } else {
+                boxAdd.style.display = "none";
+                boxGerir.style.display = "block";
+                carregarListaDeGestaoAdmin();
             }
+        }
+
+        // Função de Gestão Real: Listar para poder Deletar itens antigos
+        function carregarListaDeGestaoAdmin() {
+            const container = document.getElementById('render-adm-lista');
+            container.innerHTML = "Carregando ativos...";
+
+            db.collection("locais").onSnapshot(snap => {
+                container.innerHTML = "";
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const id = doc.id;
+                    container.innerHTML += `
+                        <div class="adm-card">
+                            <div>
+                                <b style="color:white;">${d.nome}</b><br>
+                                <span style="font-size:12px;color:#888;">${d.categoria}</span>
+                            </div>
+                            <button class="btn-gold btn-danger" style="width:auto;margin:0;padding:8px 12px;font-size:12px;" onclick="deletarPontoDoFirebase('${id}')">
+                                <i class="fas fa-trash"></i> Apagar
+                            </button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        async function deletarPontoDoFirebase(id) {
+            if(confirm("Deseja mesmo remover permanentemente este local do Marragué App?")) {
+                await db.collection("locais").doc(id).delete();
+                alert("Removido com sucesso!");
+            }
+        }
+
+        // Publicar ponto no Firebase
+        async function salvarPontoNoFirebase() {
+            const btn = document.getElementById('btn-publicar');
+            const nome = document.getElementById('adm-nome').value.trim();
+            const bairro = document.getElementById('adm-bairro').value.trim();
+            const tel = document.getElementById('adm-tel').value.trim();
+
+            if(!nome || !bairro || !tel) return alert("Preencha Nome, Bairro e Telefone!");
 
             btn.disabled = true;
-            btn.innerText = "A publicar no Firebase...";
+            btn.innerText = "Publicando...";
 
-            const payload = {
+            await db.collection("locais").add({
                 nome: nome,
-                localidade: localidade,
+                bairro: bairro,
                 categoria: document.getElementById('adm-cat').value,
                 tel: tel,
-                foto: document.getElementById('adm-foto').value.trim() || "https://via.placeholder.com/150",
-                lat: lat || -14.80,
-                lng: lng || 36.53,
-                vip: document.getElementById('adm-vip').value,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
+                foto: document.getElementById('adm-foto').value.trim(),
+                lat: parseFloat(document.getElementById('adm-lat').value) || -14.80,
+                lng: parseFloat(document.getElementById('adm-lng').value) || 36.53,
+                vip: document.getElementById('adm-vip').value
+            });
 
-            try {
-                await db.collection("locais").add(payload);
-                alert("Sucesso absoluto! Estabelecimento publicado no banco de dados.");
-                
-                // Limpeza dos inputs para a próxima inserção
-                document.getElementById('adm-nome').value = "";
-                document.getElementById('adm-localidade').value = "";
-                document.getElementById('adm-tel').value = "";
-                document.getElementById('adm-foto').value = "";
-                
-                fazerLogout();
-            } catch (erro) {
-                alert("Erro ao gravar dados no Firebase: " + erro.message);
-            }
+            alert("Publicado com Sucesso!");
+            document.getElementById('adm-nome').value = "";
+            document.getElementById('adm-bairro').value = "";
+            document.getElementById('adm-tel').value = "";
+            document.getElementById('adm-foto').value = "";
+            
             btn.disabled = false;
-            btn.innerText = "Publicar no Marragué";
+            btn.innerText = "Publicar Agora";
+            controlarPainelAdmin('gerir');
         }
     </script>
 </body>
