@@ -3,92 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Marragué Niassa v4.0</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Marragué Niassa v5.0</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
-        :root { --gold: #e5b94c; --dark: #0a0a0a; --gray: #1a1a1a; --white: #ffffff; }
-        body { background: var(--dark); color: var(--white); font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
+        :root { --gold: #e5b94c; --dark: #0d0d0d; --card-bg: #1a1a1a; --text: #ffffff; --red: #ff4444; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: var(--dark); color: var(--text); margin: 0; padding: 0; user-select: none; }
         
-        /* Telas */
-        .screen { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
-        .active { display: block; }
+        /* Sistema de Telas */
+        .screen { display: none; min-height: 100vh; padding-bottom: 80px; animation: fadeIn 0.25s ease-in-out; }
+        .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Componentes de Design */
-        .header { text-align: center; padding: 20px 0; border-bottom: 1px solid #333; margin-bottom: 20px; position: sticky; top: 0; background: var(--dark); z-index: 10; }
-        .logo { color: var(--gold); font-size: 28px; font-weight: bold; letter-spacing: 2px; margin: 0; }
-        
-        .gold-btn { background: var(--gold); color: black; border: none; padding: 16px; border-radius: 12px; font-weight: bold; width: 100%; margin: 10px 0; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .input-field { background: var(--gray); border: 1px solid #333; color: white; padding: 15px; border-radius: 10px; width: 100%; margin: 8px 0; box-sizing: border-box; font-size: 16px; }
-        
-        /* Cards de Listagem */
-        .card { background: var(--gray); border-radius: 18px; overflow: hidden; margin-bottom: 25px; border: 1px solid #333; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .card img { width: 100%; height: 200px; object-fit: cover; background: #222; }
-        .card-info { padding: 18px; }
-        .card-title { color: var(--gold); font-size: 20px; margin: 0 0 8px 0; }
-        .card-desc { color: #bbb; font-size: 14px; line-height: 1.4; margin-bottom: 15px; }
-        
-        .btn-flex { display: flex; gap: 12px; }
-        .btn-call { background: var(--white); color: black; flex: 1; padding: 12px; border-radius: 8px; font-weight: bold; border: none; }
-        .btn-wa { background: #25d366; color: white; flex: 1; padding: 12px; border-radius: 8px; font-weight: bold; border: none; }
+        /* Utilitários de Input e Botões */
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; }
+        .field { background: #222; border: 1px solid #333; color: white; padding: 14px; border-radius: 10px; width: 100%; font-size: 15px; }
+        .field:focus { border-color: var(--gold); outline: none; }
+        .btn-gold { background: var(--gold); color: black; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
+        .btn-gold:active { transform: scale(0.98); }
 
-        /* Loader */
-        .loader { border: 4px solid #333; border-top: 4px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 50px auto; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        /* Estilização da Tela de Autenticação */
+        .auth-container { max-width: 400px; margin: 0 auto; padding: 40px 20px; text-align: center; }
+        .auth-logo { color: var(--gold); font-size: 32px; font-weight: 900; letter-spacing: 3px; margin-bottom: 5px; }
+        
+        /* Cabeçalho do App */
+        .app-header { padding: 20px; background: var(--dark); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222; }
+        .user-greeting { font-size: 14px; color: #aaa; }
+        .app-title { font-size: 22px; font-weight: bold; margin: 2px 0 0 0; letter-spacing: 0.5px; }
+
+        /* Categorias do Menu Principal */
+        .cats-container { display: flex; justify-content: space-between; padding: 10px 20px; gap: 12px; }
+        .cat-box { background: var(--card-bg); flex: 1; text-align: center; padding: 15px 10px; border-radius: 15px; border: 1px solid #252525; cursor: pointer; }
+        .cat-box i { font-size: 22px; color: var(--gold); margin-bottom: 8px; display: block; }
+        .cat-box span { font-size: 12px; font-weight: 500; color: #ccc; }
+
+        /* Secções de Conteúdo */
+        .section-title { font-size: 14px; color: var(--gold); font-weight: bold; letter-spacing: 1px; padding: 20px 20px 10px 20px; margin: 0; text-transform: uppercase; }
+        
+        /* Lista e Cards de Itens */
+        .items-list { padding: 0 20px; }
+        .item-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; margin-bottom: 15px; border: 1px solid #252525; display: flex; height: 110px; position: relative; }
+        .item-card img { width: 110px; height: 110px; object-fit: cover; }
+        .item-details { padding: 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .item-name { font-size: 16px; font-weight: bold; margin: 0; color: #fff; }
+        .item-sub { font-size: 13px; color: #aaa; margin: 2px 0; }
+        .badge-vip { position: absolute; top: 8px; right: 8px; background: var(--gold); color: black; font-size: 9px; font-weight: bold; padding: 3px 6px; border-radius: 4px; text-transform: uppercase; }
+        .btn-wa-direct { background: #25d366; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; align-self: flex-start; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
+        /* Aba do Mapa */
+        #map-container { width: 100%; height: calc(100vh - 140px); background: #111; }
+
+        /* Aba do Perfil */
+        .profile-header { text-align: center; padding: 40px 20px; }
+        .avatar-dummy { width: 90px; height: 90px; background: var(--gold); border-radius: 50%; margin: 0 auto 15px auto; }
+        .profile-name { font-size: 24px; font-weight: bold; margin: 0; }
+        .profile-points { color: var(--gold); font-size: 15px; margin-top: 5px; font-weight: 500; }
+        .profile-menu { padding: 0 20px; }
+        .menu-row { background: var(--card-bg); padding: 16px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px solid #222; }
+
+        /* Menu de Navegação Inferior Móvel */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #0a0a0a; border-top: 1px solid #222; display: flex; height: 65px; z-index: 999; }
+        .nav-item { flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #666; cursor: pointer; transition: 0.2s; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item span { font-size: 11px; }
+        .nav-item.active { color: var(--gold); }
+
+        /* Tela Administrativa */
+        .admin-header { background: #1a0505; border-bottom: 1px solid #401010; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
 
-    <div id="login" class="screen active">
-        <div style="text-align: center; margin-top: 50px;">
-            <h1 class="logo">MARRAGUÉ</h1>
-            <p style="color: #888;">Explore Cuamba e Niassa</p>
-        </div>
-        <div style="margin-top: 40px;">
-            <input type="email" id="email" class="input-field" placeholder="Email">
-            <input type="password" id="pass" class="input-field" placeholder="Palavra-passe">
-            <button class="gold-btn" onclick="auth()">ENTRAR</button>
-            <p style="text-align: center; font-size: 13px; color: #666; margin-top: 20px;">Novo por aqui? Criar Conta</p>
+    <div id="scr-auth" class="screen active">
+        <div class="auth-container">
+            <div class="auth-logo">MARRAGUÉ</div>
+            <p style="color: #666; margin-bottom: 40px;">NIASSA EXPLORER</p>
+            
+            <div id="auth-fields">
+                <div class="input-group">
+                    <input type="email" id="auth-email" class="field" placeholder="Email">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="auth-pass" class="field" placeholder="Palavra-passe">
+                </div>
+                
+                <button class="btn-gold" id="btn-main-auth" onclick="executarAuth()">Entrar</button>
+                
+                <p id="toggle-auth-text" style="margin-top: 25px; color: #aaa; font-size: 14px;">
+                    Novo por aqui? <span style="color: var(--gold); cursor: pointer; font-weight: bold;" onclick="alternarModoAuth()">Criar Conta</span>
+                </p>
+            </div>
         </div>
     </div>
 
-    <div id="menu" class="screen">
-        <div class="header"><h2 class="logo" style="font-size: 20px;">EXPLORAR</h2></div>
-        <button class="gold-btn" onclick="verCat('Restaurante')"><i class="fas fa-utensils"></i> RESTAURANTES</button>
-        <button class="gold-btn" onclick="verCat('Hotel')"><i class="fas fa-bed"></i> HOTÉIS</button>
-        <button class="gold-btn" onclick="verCat('Loja')"><i class="fas fa-shopping-cart"></i> LOJAS E SERVIÇOS</button>
-        <hr style="border: 0; border-top: 1px solid #333; margin: 30px 0;">
-        <button class="gold-btn" style="background: #333; color: white;" onclick="irPara('admin')"><i class="fas fa-user-shield"></i> MODO GESTOR</button>
-    </div>
+    <div id="main-app-structure" style="display: none;">
+        
+        <div id="scr-home" class="screen">
+            <div class="app-header">
+                <span class="user-greeting">Olá, Parceiro!</span>
+                <h1 class="app-title">Marragué Niassa</h1>
+            </div>
 
-    <div id="lista" class="screen">
-        <div class="header">
-            <button onclick="irPara('menu')" style="position: absolute; left: 20px; background: none; border: none; color: var(--gold); font-size: 22px;"><i class="fas fa-arrow-left"></i></button>
-            <span id="catTitulo" style="font-weight: bold; font-size: 18px; text-transform: uppercase; letter-spacing: 1px;">Categoria</span>
+            <div class="cats-container">
+                <div class="cat-box" onclick="filtrarCategoria('Restaurante')">
+                    <i class="fas fa-utensils"></i>
+                    <span>Restôs</span>
+                </div>
+                <div class="cat-box" onclick="filtrarCategoria('Hotel')">
+                    <i class="fas fa-bed"></i>
+                    <span>Motéis</span>
+                </div>
+                <div class="cat-box" onclick="filtrarCategoria('Entrega')">
+                    <i class="fas fa-truck"></i>
+                    <span>Entregas</span>
+                </div>
+            </div>
+
+            <h2 class="section-title" id="lista-titulo">Destaques VIP</h2>
+            <div class="items-list" id="home-items-render">
+                </div>
         </div>
-        <div id="container"></div>
+
+        <div id="scr-mapa" class="screen">
+            <div class="app-header"><h1 class="app-title">Mapa Niassa</h1></div>
+            <div id="map-container"></div>
+        </div>
+
+        <div id="scr-perfil" class="screen">
+            <div class="profile-header">
+                <div class="avatar-dummy"></div>
+                <h2 class="profile-name">Membro VIP</h2>
+                <div class="profile-points">1.250 Pontos</div>
+            </div>
+
+            <div class="profile-menu">
+                <div class="menu-row">
+                    <span><i class="fas fa-history" style="margin-right: 10px; color: var(--gold);"></i> Minhas Visitas</span>
+                    <i class="fas fa-chevron-right" style="color: #404040;"></i>
+                </div>
+                <div class="menu-row" onclick="irParaAba('mapa')">
+                    <span><i class="fas fa-map-marked-alt" style="margin-right: 10px; color: var(--gold);"></i> Ver Registos no Mapa</span>
+                    <i class="fas fa-chevron-right" style="color: #404040;"></i>
+                </div>
+                <button class="btn-gold" style="background: #ff4444; color: white; margin-top: 30px;" onclick="fazerLogout()">Sair do App</button>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <div class="nav-item active" id="nav-home" onclick="irParaAba('home')">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" id="nav-mapa" onclick="irParaAba('mapa')">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Mapa</span>
+            </div>
+            <div class="nav-item" id="nav-perfil" onclick="irParaAba('perfil')">
+                <i class="fas fa-user"></i>
+                <span>Perfil</span>
+            </div>
+        </div>
     </div>
 
-    <div id="admin" class="screen">
-        <div class="header"><h2 style="color: #ff4444; margin:0;">PAINEL GESTOR</h2></div>
-        <input type="text" id="adm-nome" class="input-field" placeholder="Nome do Local (Ex: Hotel Niassa)">
-        <select id="adm-cat" class="input-field">
-            <option value="Restaurante">Restaurante</option>
-            <option value="Hotel">Hotel</option>
-            <option value="Loja">Loja / Serviço</option>
-        </select>
-        <input type="tel" id="adm-tel" class="input-field" placeholder="Telefone (84/82/87...)">
-        <input type="text" id="adm-foto" class="input-field" placeholder="Link da Foto (URL da imagem)">
-        <textarea id="adm-desc" class="input-field" rows="3" placeholder="Descrição curta do que oferecem..."></textarea>
-        <button id="btnSalvar" class="gold-btn" onclick="salvarNovo()">PUBLICAR NO APP</button>
-        <button class="gold-btn" style="background: #333; color: white;" onclick="irPara('menu')">SAIR DO MODO GESTOR</button>
+
+    <div id="scr-admin" class="screen">
+        <div class="admin-header">
+            <h2 style="color: var(--red); margin:0; font-size: 18px;"><i class="fas fa-user-shield"></i> MODO GESTOR</h2>
+            <button style="background: #333; border: none; color: white; padding: 8px 15px; border-radius: 8px; font-weight: bold;" onclick="fazerLogout()">Desligar</button>
+        </div>
+
+        <div style="padding: 20px;">
+            <h3 style="margin-top: 0; color: var(--gold);">Cadastrar Novo Ponto</h3>
+            
+            <div class="input-group">
+                <label>Nome do Local:</label>
+                <input type="text" id="adm-nome" class="field" placeholder="Ex: Restaurante Elite">
+            </div>
+            <div class="input-group">
+                <label>Cidade / Distrito:</label>
+                <input type="text" id="adm-localidade" class="field" placeholder="Ex: Cuamba ou Lichinga">
+            </div>
+            <div class="input-group">
+                <label>Categoria:</label>
+                <select id="adm-cat" class="field">
+                    <option value="Restaurante">Restaurante</option>
+                    <option value="Hotel">Hotel / Motel</option>
+                    <option value="Entrega">Entrega / Serviços</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Contacto de Telefone (Sem espaços):</label>
+                <input type="tel" id="adm-tel" class="field" placeholder="Ex: 841234567">
+            </div>
+            <div class="input-group">
+                <label>URL da Foto do Estabelecimento:</label>
+                <input type="text" id="adm-foto" class="field" placeholder="https://link.com/imagem.jpg">
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <div class="input-group" style="flex: 1;">
+                    <label>Latitude:</label>
+                    <input type="number" step="any" id="adm-lat" class="field" value="-14.80">
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <label>Longitude:</label>
+                    <input type="number" step="any" id="adm-lng" class="field" value="36.53">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Status Promocional:</label>
+                <select id="adm-vip" class="field">
+                    <option value="nao">Conta Padrão</option>
+                    <option value="sim">Destaque VIP</option>
+                </select>
+            </div>
+
+            <button class="btn-gold" id="btnSalvar" style="margin-top: 15px;" onclick="salvarPontoFirebase()">Publicar no Marragué</button>
+        </div>
     </div>
 
     <script>
-        // Configuração Oficial do seu Firebase
+        // Configuração do teu Banco de Dados Firebase do Projeto Marragué
         const firebaseConfig = {
             apiKey: "AIzaSyAZ_V-SfLdEXuPlU7W4uyWHvC_-Zm94jxU",
             authDomain: "marragueapp.firebaseapp.com",
@@ -100,91 +243,217 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Navegação entre telas
-        function irPara(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            window.scrollTo(0,0);
-        }
+        // Estados Globais de Controle
+        let modoAuthAtual = "login"; // login ou registro
+        let mapaLeaflet = null;
+        let marcadoresMapa = [];
 
-        // Lógica de Login simples
-        function auth() {
-            const email = document.getElementById('email').value.toLowerCase();
-            if(email === "admin@marrague.com") {
-                irPara('admin');
+        // Controlador de Telas de Login/Admin
+        function alternarModoAuth() {
+            const btn = document.getElementById('btn-main-auth');
+            const txt = document.getElementById('toggle-auth-text');
+            if (modoAuthAtual === "login") {
+                modoAuthAtual = "registro";
+                btn.innerText = "Criar Minha Conta";
+                txt.innerHTML = 'Já possui cadastro? <span style="color:var(--gold); font-weight:bold;" onclick="alternarModoAuth()">Entrar</span>';
             } else {
-                irPara('menu');
+                modoAuthAtual = "login";
+                btn.innerText = "Entrar";
+                txt.innerHTML = 'Novo por aqui? <span style="color:var(--gold); font-weight:bold;" onclick="alternarModoAuth()">Criar Conta</span>';
             }
         }
 
-        // Salvar no Firebase
-        async function salvarNovo() {
-            const btn = document.getElementById('btnSalvar');
-            const nome = document.getElementById('adm-nome').value;
-            const tel = document.getElementById('adm-tel').value;
+        // Lógica Principal de Autenticação baseada em Firestore
+        function executarAuth() {
+            const email = document.getElementById('auth-email').value.toLowerCase().trim();
+            const pass = document.getElementById('auth-pass').value.trim();
 
-            if(!nome || !tel) return alert("Por favor, preencha Nome e Telefone!");
+            if (!email || !pass) return alert("Por favor, preencha todos os campos!");
 
-            btn.disabled = true;
-            btn.innerText = "A PUBLICAR...";
-
-            const novoLocal = {
-                nome: nome,
-                cat: document.getElementById('adm-cat').value,
-                tel: tel,
-                foto: document.getElementById('adm-foto').value || "https://via.placeholder.com/400x200?text=Marrague+Niassa",
-                desc: document.getElementById('adm-desc').value,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            try {
-                await db.collection("pontos").add(novoLocal);
-                alert("Sucesso! Local publicado em Cuamba.");
-                irPara('menu');
-                // Limpar campos
-                document.getElementById('adm-nome').value = "";
-                document.getElementById('adm-tel').value = "";
-                document.getElementById('adm-foto').value = "";
-                document.getElementById('adm-desc').value = "";
-            } catch (e) {
-                alert("Erro ao salvar: " + e.message);
+            // LOGIN DO ADMINISTRADOR SUPREMO
+            if (email === "admin@marrague.com") {
+                document.getElementById('scr-auth').classList.remove('active');
+                document.getElementById('scr-admin').classList.add('active');
+                return;
             }
-            btn.disabled = false;
-            btn.innerText = "PUBLICAR NO APP";
+
+            // Simulação nativa de Login/Registro persistido via Firestore para utilizadores comuns
+            if (modoAuthAtual === "registro") {
+                db.collection("usuarios").doc(email).set({ email: email, pass: pass, vip: false, pontos: 1250 })
+                .then(() => {
+                    alert("Conta criada com sucesso! Bem-vindo ao Marragué.");
+                    entrarNoAplicativoUsuario();
+                });
+            } else {
+                db.collection("usuarios").doc(email).get().then((doc) => {
+                    if (doc.exists && doc.data().pass === pass) {
+                        entrarNoAplicativoUsuario();
+                    } else {
+                        alert("Dados incorretos ou utilizador não registado!");
+                    }
+                });
+            }
         }
 
-        // Mostrar locais por categoria
-        function verCat(categoria) {
-            irPara('lista');
-            document.getElementById('catTitulo').innerText = categoria;
-            const container = document.getElementById('container');
-            container.innerHTML = '<div class="loader"></div>';
+        function entrarNoAplicativoUsuario() {
+            document.getElementById('scr-auth').classList.remove('active');
+            document.getElementById('main-app-structure').style.display = "block";
+            irParaAba('home');
+        }
 
-            db.collection("pontos").where("cat", "==", categoria).orderBy("timestamp", "desc").onSnapshot(snap => {
+        function fazerLogout() {
+            document.getElementById('main-app-structure').style.display = "none";
+            document.getElementById('scr-admin').classList.remove('active');
+            document.getElementById('scr-home').classList.remove('active');
+            document.getElementById('scr-mapa').classList.remove('active');
+            document.getElementById('scr-perfil').classList.remove('active');
+            
+            document.getElementById('auth-email').value = "";
+            document.getElementById('auth-pass').value = "";
+            document.getElementById('scr-auth').classList.add('active');
+        }
+
+        // Controlador da barra de navegação inferior (Abas)
+        function irParaAba(abaId) {
+            document.querySelectorAll('#main-app-structure .screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            
+            document.getElementById('scr-' + abaId).classList.add('active');
+            document.getElementById('nav-' + abaId).classList.add('active');
+            
+            if (abaId === 'home') carregarPontosDoFirebase();
+            if (abaId === 'mapa') inicializarOuAtualizarMapa();
+        }
+
+        // Carrega dados em Tempo Real da Coleção do Firebase
+        function carregarPontosDoFirebase(filtroCategoria = null) {
+            const container = document.getElementById('home-items-render');
+            container.innerHTML = '<p style="text-align:center;color:#666;padding:20px;">Carregando dados reais...</p>';
+
+            let query = db.collection("locais");
+            if (filtroCategoria) {
+                query = query.where("categoria", "==", filtroCategoria);
+                document.getElementById('lista-titulo').innerText = "Categoria: " + filtroCategoria;
+            } else {
+                query = query.where("vip", "==", "sim");
+                document.getElementById('lista-titulo').innerText = "Destaques VIP";
+            }
+
+            query.onSnapshot(snapshot => {
                 container.innerHTML = "";
-                if(snap.empty) {
-                    container.innerHTML = "<p style='text-align:center; color:#666; margin-top:50px;'>Nenhum local cadastrado nesta categoria.</p>";
+                if (snapshot.empty) {
+                    container.innerHTML = '<p style="text-align:center;color:#666;padding:20px;">Nenhum registo encontrado para esta seleção.</p>';
                     return;
                 }
-                snap.forEach(doc => {
-                    const d = doc.data();
+
+                snapshot.forEach(doc => {
+                    const dados = doc.data();
+                    const vipBadge = dados.vip === "sim" ? '<span class="badge-vip">VIP</span>' : '';
+                    
                     container.innerHTML += `
-                        <div class="card">
-                            <img src="${d.foto}" onerror="this.src='https://via.placeholder.com/400x200?text=Imagem+Indisponivel'">
-                            <div class="card-info">
-                                <h3 class="card-title">${d.nome}</h3>
-                                <p class="card-desc">${d.desc || 'Sem descrição disponível.'}</p>
-                                <div class="btn-flex">
-                                    <button class="btn-call" onclick="window.location.href='tel:${d.tel}'"><i class="fas fa-phone"></i> LIGAR</button>
-                                    <button class="btn-wa" onclick="window.location.href='https://wa.me/258${d.tel.replace(/\s/g,'')}'"><i class="fab fa-whatsapp"></i> WHATSAPP</button>
+                        <div class="item-card">
+                            <img src="${dados.foto}" onerror="this.src='https://via.placeholder.com/150?text=Marrague'">
+                            ${vipBadge}
+                            <div class="item-details">
+                                <div>
+                                    <h3 class="item-name">${dados.nome}</h3>
+                                    <p class="item-sub"><i class="fas fa-map-marker-alt" style="color:var(--gold);"></i> ${dados.localidade}</p>
                                 </div>
+                                <button class="btn-wa-direct" onclick="abrirWhatsApp('${dados.tel}', '${dados.nome}')">
+                                    <i class="fab fa-whatsapp"></i> Pedir comida / Reservar
+                                </button>
                             </div>
                         </div>
                     `;
                 });
             });
         }
+
+        function filtrarCategoria(cat) {
+            carregarPontosDoFirebase(cat);
+        }
+
+        function abrirWhatsApp(numero, nomeLocal) {
+            const msg = encodeURIComponent(`Olá! Vi o vosso anúncio no aplicativo Marragué Niassa e gostaria de solicitar informações/serviços.`);
+            window.location.href = `https://wa.me/258${numero.replace(/\s/g, '')}?text=${msg}`;
+        }
+
+        // Lógica do Mapa de Localização Profissional (Leaflet OpenStreetMap)
+        function inicializarOuAtualizarMapa() {
+            setTimeout(() => {
+                if (!mapaLeaflet) {
+                    // Centralizado em Cuamba/Niassa automaticamente
+                    mapaLeaflet = L.map('map-container').setView([-14.803, 36.537], 13);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        attribution: 'Marragué Niassa'
+                    }).addTo(mapaLeaflet);
+                } else {
+                    mapaLeaflet.invalidateSize();
+                }
+
+                // Limpar marcadores antigos
+                marcadoresMapa.forEach(m => mapaLeaflet.removeLayer(m));
+                marcadoresMapa = [];
+
+                // Puxar as coordenadas reais salvas pelo Admin no Firebase
+                db.collection("locais").get().then(snapshot => {
+                    snapshot.forEach(doc => {
+                        const d = doc.data();
+                        if (d.lat && d.lng) {
+                            const marker = L.marker([d.lat, d.lng]).addTo(mapaLeaflet)
+                                .bindPopup(`<b style="color:black;">${d.nome}</b><br><span style="color:gray;">${d.categoria}</span>`);
+                            marcadoresMapa.push(marker);
+                        }
+                    });
+                });
+            }, 300);
+        }
+
+        // Operação de Escrita de Dados Completa (Admin)
+        async function salvarPontoFirebase() {
+            const btn = document.getElementById('btnSalvar');
+            const nome = document.getElementById('adm-nome').value.trim();
+            const localidade = document.getElementById('adm-localidade').value.trim();
+            const tel = document.getElementById('adm-tel').value.trim();
+            const lat = parseFloat(document.getElementById('adm-lat').value);
+            const lng = parseFloat(document.getElementById('adm-lng').value);
+
+            if (!nome || !localidade || !tel) {
+                return alert("Erro: Nome, Localidade e Telefone são campos estritamente obrigatórios!");
+            }
+
+            btn.disabled = true;
+            btn.innerText = "A publicar no Firebase...";
+
+            const payload = {
+                nome: nome,
+                localidade: localidade,
+                categoria: document.getElementById('adm-cat').value,
+                tel: tel,
+                foto: document.getElementById('adm-foto').value.trim() || "https://via.placeholder.com/150",
+                lat: lat || -14.80,
+                lng: lng || 36.53,
+                vip: document.getElementById('adm-vip').value,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection("locais").add(payload);
+                alert("Sucesso absoluto! Estabelecimento publicado no banco de dados.");
+                
+                // Limpeza dos inputs para a próxima inserção
+                document.getElementById('adm-nome').value = "";
+                document.getElementById('adm-localidade').value = "";
+                document.getElementById('adm-tel').value = "";
+                document.getElementById('adm-foto').value = "";
+                
+                fazerLogout();
+            } catch (erro) {
+                alert("Erro ao gravar dados no Firebase: " + erro.message);
+            }
+            btn.disabled = false;
+            btn.innerText = "Publicar no Marragué";
+        }
     </script>
 </body>
 </html>
-
